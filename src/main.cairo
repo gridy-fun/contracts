@@ -1,6 +1,6 @@
 #[starknet::contract]
 pub mod GameContract{
-    use starknet::{ContractAddress,ClassHash};
+    use starknet::{ContractAddress,ClassHash,get_contract_address};
     use gridy::{
         interface::IGameContract,
     };
@@ -11,6 +11,7 @@ pub mod GameContract{
         access::ownable::OwnableComponent,
         upgrades::{UpgradeableComponent, interface::IUpgradeable},
     };
+    use starknet::syscalls::deploy_syscall;
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
@@ -155,7 +156,9 @@ pub mod GameContract{
         fn deploy_bot(ref self: ContractState, player: ContractAddress, location: felt252) {
             assert(self.is_contract_enabled(), 'Contract is disabled');
 
-            
+            // deploy bot class hash
+            let bot_contract_class_hash = self.bot_contract_class_hash.read();
+            deploy_syscall(bot_contract_class_hash.try_into().unwrap(), 0, @array![get_contract_address(), get_caller_address(), 0].span(), false);
 
             // TODO: add bot to the game using executor contract
             self.emit(Event::SpawnedBot(SpawnedBot { player: player, location: location }));
