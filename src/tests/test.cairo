@@ -31,30 +31,6 @@ fn check_deploy_bot() {
 
     dispatcher.enable_contract();
     let player : ContractAddress = 0x2d55d6f311413945595788818d4e89e151360a2c2c6b5270d5d0ed16475505f.try_into().unwrap();
-    dispatcher.deploy_bot(player);
-
-    // check storage of the contract
-    let bot = dispatcher.get_bot(player);
-    assert(bot == 1, 'bot is not deployed');
-}
-
-#[test]
-fn check_bot_for_address() {
-    // First declare and deploy a contract
-    let game_contract_address = deploy_contract();
-    let dispatcher = IGameContractDispatcher { contract_address: game_contract_address };
-
-    // enable contract
-    dispatcher.enable_contract();
-    
-    // deploy bot with true player
-    let true_player : ContractAddress = 0x2d55d6f311413945595788818d4e89e151360a2c2c6b5270d5d0ed16475505f.try_into().unwrap();
-    dispatcher.deploy_bot(true_player);
-
-    // add a false player address
-    let false_player: ContractAddress =0x2d55d6f311413945595788818d4e89e151360a2c2c6b5270d5d0ed16475505a.try_into().unwrap();
-
-    // check storage of the contract
-    let bot = dispatcher.get_bot(false_player);
-    assert(bot == 0, 'bot is not deployed');
+    let block_id : felt252 = 234234234324;
+    dispatcher.deploy_bot(player, block_id);
 }

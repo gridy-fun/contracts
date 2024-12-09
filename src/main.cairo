@@ -1,6 +1,6 @@
 #[starknet::contract]
 pub mod GameContract{
-    use starknet::{ContractAddress};
+    use starknet::{ContractAddress,ClassHash};
     use gridy::{
         interface::IGameContract,
     };
@@ -72,7 +72,7 @@ pub mod GameContract{
         #[key]
         bot: ContractAddress,
         #[key]
-        points: u256,
+        points: u128,
         #[key]
         location: felt252,
     }
@@ -80,7 +80,7 @@ pub mod GameContract{
     #[derive(Drop, starknet::Event)]
     struct SpawnedBot {
         #[key]
-        bot: ContractAddress,
+        player: ContractAddress,
         #[key]
         location: felt252,
     }
@@ -98,13 +98,20 @@ pub mod GameContract{
         #[key]
         bot: ContractAddress,
         #[key]
-        points: u256,
+        points: u128,
         #[key]
         location: felt252,
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, executor: ContractAddress, mining_points: u128, grid_width: u128, grid_height: u128, owner: ContractAddress) {
+    fn constructor(
+        ref self: ContractState, 
+        executor: ContractAddress, 
+        mining_points: u128, 
+        grid_width: u128, 
+        grid_height: u128, 
+        owner: ContractAddress
+    ) {
         // Set the initial owner of the contract
         self.ownable.initializer(owner);
 
@@ -141,14 +148,14 @@ pub mod GameContract{
         }
 
         fn deploy_bot(ref self: ContractState, player: ContractAddress, location: felt252) {
-            assert(self.is_contract_enabled(), "Contract is disabled");
+            assert(self.is_contract_enabled(), 'Contract is disabled');
 
             // TODO: add bot to the game using executor contract
             self.emit(Event::SpawnedBot(SpawnedBot { player: player, location: location }));
         }
 
         fn mine(ref self: ContractState, bot: ContractAddress, new_mine: felt252) {
-            let diamond_points = self.diamond_points_map.entry(new_mine).read();
+            let diamond_points : u128 = self.diamond_points_map.entry(new_mine).read();
 
             // check if location contains a diamond
             if diamond_points > 0 {
