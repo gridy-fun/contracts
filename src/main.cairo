@@ -28,6 +28,9 @@ pub mod GameContract{
         // Flag to enable/disable the contract
         contract_enabled: bool,
 
+        // bot contract class hash
+        bot_contract_class_hash: ClassHash,
+
         // diamond location -> we use a map to make it easy to search for the diamond in O(1)
         diamond_points_map: Map<felt252, u128>,
 
@@ -106,11 +109,12 @@ pub mod GameContract{
     #[constructor]
     fn constructor(
         ref self: ContractState, 
+        owner: ContractAddress,
         executor: ContractAddress, 
+        bot_contract_class_hash: ClassHash,
         mining_points: u128, 
         grid_width: u128, 
         grid_height: u128, 
-        owner: ContractAddress
     ) {
         // Set the initial owner of the contract
         self.ownable.initializer(owner);
@@ -120,6 +124,7 @@ pub mod GameContract{
         self.executor.write(executor);
         self.grid_width.write(10);
         self.grid_height.write(10);
+        self.bot_contract_class_hash.write(bot_contract_class_hash);
     }
 
 
@@ -150,6 +155,8 @@ pub mod GameContract{
         fn deploy_bot(ref self: ContractState, player: ContractAddress, location: felt252) {
             assert(self.is_contract_enabled(), 'Contract is disabled');
 
+            
+
             // TODO: add bot to the game using executor contract
             self.emit(Event::SpawnedBot(SpawnedBot { player: player, location: location }));
         }
@@ -178,8 +185,8 @@ pub mod GameContract{
             self.contract_enabled.read()
         }
 
-        fn check_if_already_mined(self: @ContractState, new_mine: felt252) -> bool {
-            self.mined_tiles.entry(new_mine).read()
+        fn check_if_already_mined(self: @ContractState, block_id: felt252) -> bool {
+            self.mined_tiles.entry(block_id).read()
         }
     }
 
