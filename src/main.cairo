@@ -87,6 +87,8 @@ pub mod GameContract{
         player: ContractAddress,
         #[key]
         location: felt252,
+        #[key]
+        bot_address: ContractAddress,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -158,10 +160,10 @@ pub mod GameContract{
 
             // deploy bot class hash
             let bot_contract_class_hash = self.bot_contract_class_hash.read();
-            deploy_syscall(bot_contract_class_hash.try_into().unwrap(), 0, @array![get_contract_address(), get_caller_address(), 0].span(), false);
+            let (deployed_address,_) = deploy_syscall(bot_contract_class_hash.try_into().unwrap(), 0, @array![get_contract_address(), get_caller_address(), 0].span(), false).unwrap_syscall();
 
             // TODO: add bot to the game using executor contract
-            self.emit(Event::SpawnedBot(SpawnedBot { player: player, location: location }));
+            self.emit(Event::SpawnedBot(SpawnedBot { player: player, location: location, bot_address: deployed_address }));
         }
 
         fn mine(ref self: ContractState, bot: ContractAddress, new_mine: felt252) {
