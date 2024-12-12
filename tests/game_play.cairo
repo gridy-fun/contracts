@@ -105,8 +105,7 @@ fn mine_block() {
 }
 
 #[test]
-#[should_panic(expected: 'block already mined')]
-fn mine_same_block_twice() {
+fn mine_same_block_twice_success() {
     // First declare and deploy a contract
     let (game_contract_address, bot_contract_address,executor_address) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };

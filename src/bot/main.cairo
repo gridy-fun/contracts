@@ -11,7 +11,7 @@ pub mod BotContract{
 
     #[storage]
     struct Storage {
-       owner : ContractAddress,
+       executor : ContractAddress,
        spawned_by: ContractAddress,
        initial_location: felt252,
        bot_enabled: bool,
@@ -23,14 +23,14 @@ pub mod BotContract{
     #[constructor]
     fn constructor(
         ref self: ContractState, 
-        owner: ContractAddress, 
+        executor: ContractAddress, 
         spawned_by: ContractAddress, 
         game_contract: ContractAddress,
         initial_location: felt252,
         grid_width: u128,
         grid_height: u128,
     ) {
-        self.owner.write(owner);
+        self.executor.write(executor);
         self.spawned_by.write(spawned_by);
         self.initial_location.write(initial_location);
         self.bot_enabled.write(true);
@@ -42,35 +42,35 @@ pub mod BotContract{
     #[abi(embed_v0)]
     impl BotContract of IBotContract<ContractState> {
         fn start_bot(ref self: ContractState) {
-            assert(self.owner.read() == get_caller_address(),'Only admin can start');
+            assert(self.executor.read() == get_caller_address(),'Only admin can start');
             self.bot_enabled.write(true);
         }
 
         fn kill_bot(ref self: ContractState) {
-            assert(self.owner.read() == get_caller_address(),'Only admin can kill');
+            assert(self.executor.read() == get_caller_address(),'Only admin can kill');
             self.bot_enabled.write(false);
         }
 
-        fn update_owner(ref self: ContractState, new_owner: ContractAddress) {
-            assert(self.owner.read() == get_caller_address(),'Only admin can update');
-            self.owner.write(new_owner);
+        fn update_owner(ref self: ContractState, new_executor: ContractAddress) {
+            assert(self.executor.read() == get_caller_address(),'Only admin can update');
+            self.executor.write(new_executor);
         }
 
         fn compute_point(self: @ContractState, seed: u128) -> felt252 {
             assert(self.bot_enabled.read()==true, 'Bot is dead');
 
             let mut block_id: u256  = 0;
-            let mut attempts = 100;
+            let mut attempts : u128 = 0;
 
             let mut is_valid_point= false;
 
             loop {
-                if is_valid_point || attempts == 0 {
+                if is_valid_point || attempts == 100 {
                     break;
                 }
 
                 // generate random number
-                let (x,y) = self.generate_random_number(seed);
+                let (x,y) = self.generate_random_number(seed + attempts);
 
                 // check if block is mined
                 block_id = self.get_blockid_from_coordinates(array![(x % self.grid_width.read()) + 1,((y / self.grid_height.read()) % self.grid_height.read()) + 1].span()).try_into().unwrap();
@@ -81,7 +81,7 @@ pub mod BotContract{
                     is_valid_point = true;
                 }
 
-                attempts -= 1;
+                attempts += 1;
             };
             
             block_id.low.into()

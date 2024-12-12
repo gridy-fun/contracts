@@ -137,15 +137,17 @@ pub mod GameContract{
         self.bomb_value.write(bomb_value);
         self.bot_contract_class_hash.write(bot_contract_class_hash);
 
-        // // add block points
-        // loop {
-        //     let block_point = block_points.pop();
-        //     if block_point.is_none() {
-        //         break;
-        //     }
-        //     let block_point = block_point.unwrap();
-        //     self.block_points_map.entry(block_point.id).write(block_point.points);
-        // }
+        // add block points
+        let mut index=0;
+        loop {
+            if index == block_points.len() {
+                break;
+            }
+            let block_point = *block_points.at(index);
+            let block_point = block_point.unwrap();
+            self.block_points_map.entry(block_point.id).write(block_point.points);
+            index += 1;
+        }
     }
 
 
