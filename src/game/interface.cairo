@@ -1,0 +1,18 @@
+use starknet::ContractAddress;
+
+#[starknet::interface]
+pub trait IGameContract<TContractState> {
+    // admin functions 
+    fn enable_contract(ref self: TContractState);
+    fn disable_contract(ref self: TContractState);
+    fn update_executor_contract(ref self: TContractState, executor: ContractAddress);
+    fn update_bomb_value(ref self: TContractState, bomb_value: u128);
+
+    // game functions
+    fn deploy_bot(ref self: TContractState, player: ContractAddress, location: felt252);
+    fn mine(ref self: TContractState, bot: ContractAddress, seed: u128);
+
+    // view functions
+    fn is_contract_enabled(self: @TContractState) -> bool;
+    fn check_if_already_mined(self: @TContractState, block_id: felt252) -> bool;
+}
