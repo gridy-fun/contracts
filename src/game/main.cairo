@@ -84,19 +84,14 @@ pub mod GameContract{
 
     #[derive(Drop, starknet::Event)]
     struct SpawnedBot {
-        #[key]
         player: ContractAddress,
-        #[key]
         location: felt252,
-        #[key]
         bot_address: ContractAddress,
     }
 
     #[derive(Drop, starknet::Event)]
     struct BombFound {
-        #[key]
         bot: ContractAddress,
-        #[key]
         location: felt252,
     }
 
