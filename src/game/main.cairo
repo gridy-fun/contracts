@@ -1,6 +1,6 @@
 #[starknet::contract]
 pub mod GameContract{
-    use starknet::{ContractAddress,ClassHash,get_contract_address, get_caller_address, SyscallResultTrait};
+    use starknet::{ContractAddress,ClassHash,get_contract_address, SyscallResultTrait};
     use gridy::{
         game::{interface::IGameContract},
         bot::{interface::{IBotContractDispatcher,IBotContractDispatcherTrait}},
@@ -36,7 +36,7 @@ pub mod GameContract{
         // diamond location -> we use a map to make it easy to search for the diamond in O(1)
         block_points_map: Map<felt252, u128>,
 
-        // bomb location -> we use a map to make it easy to search for the bomb in O(1)
+        // bomb value -> flag value to identify a bomb
         bomb_value: u128,
 
         // points for mining
@@ -125,7 +125,7 @@ pub mod GameContract{
         mining_points: u128, 
         grid_width: u128, 
         grid_height: u128, 
-        block_points: Span<BlockPoint>,
+        // block_points: Span<BlockPoint>,
     ) {
         // Set the initial owner of the contract
         self.ownable.initializer(executor);
@@ -137,17 +137,19 @@ pub mod GameContract{
         self.bomb_value.write(bomb_value);
         self.bot_contract_class_hash.write(bot_contract_class_hash);
 
+        self.block_points_map.entry(14991605).write(666);
+
         // add block points
-        let mut index=0;
-        loop {
-            if index == block_points.len() {
-                break;
-            }
-            let block_point = *block_points.at(index);
-            let block_point = block_point.unwrap();
-            self.block_points_map.entry(block_point.id).write(block_point.points);
-            index += 1;
-        }
+        // let mut index=0;
+        // loop {
+        //     if index == block_points.len() {
+        //         break;
+        //     }
+        //     let block_point = *block_points.at(index);
+        //     let block_point = block_point.unwrap();
+        //     self.block_points_map.entry(block_point.id).write(block_point.points);
+        //     index += 1;
+        // }
     }
 
 
@@ -189,11 +191,16 @@ pub mod GameContract{
 
             // deploy bot class hash
             let bot_contract_class_hash = self.bot_contract_class_hash.read();
-            let contract_address: felt252 = get_contract_address().try_into().unwrap();
-            let caller_address : felt252 = get_caller_address().try_into().unwrap();
-            let (deployed_address,_) = deploy_syscall(bot_contract_class_hash.try_into().unwrap(), 0, array![contract_address, caller_address, 132123213].span(), false).unwrap_syscall();
+            let contract_address = get_contract_address();
+            let mut bot_contract_constructor_args = ArrayTrait::new();
+            self.executor.read().serialize(ref bot_contract_constructor_args);
+            player.serialize(ref bot_contract_constructor_args);
+            contract_address.serialize(ref bot_contract_constructor_args);
+            location.serialize(ref bot_contract_constructor_args);
+            self.grid_width.read().serialize(ref bot_contract_constructor_args);
+            self.grid_height.read().serialize(ref bot_contract_constructor_args);
+            let (deployed_address,_) = deploy_syscall(bot_contract_class_hash.try_into().unwrap(), 0, bot_contract_constructor_args.span(), false).unwrap_syscall();
 
-            // TODO: add bot to the game using executor contract ( add this to the server )
             self.emit(Event::SpawnedBot(SpawnedBot { player: player, location: location, bot_address: deployed_address }));
         }
 
@@ -204,8 +211,11 @@ pub mod GameContract{
             // check if contract is disabled
             assert(self.is_contract_enabled(), 'Contract is disabled');
 
+            // get bot contract 
+            let bot_contract = IBotContractDispatcher { contract_address: bot };
+
             // generate random point from bot
-            let new_mine : felt252 = IBotContractDispatcher { contract_address: bot }.compute_point(seed);
+            let new_mine : felt252 = bot_contract.compute_point(seed);
 
             // get bomb denotion value
             let bomb_value=self.bomb_value.read();
@@ -223,7 +233,7 @@ pub mod GameContract{
 
             // check if location contains a bomb
             else if block_points == bomb_value {
-                // TODO: remove bot from the game in the executor contract ( add this to the server )
+                bot_contract.kill_bot();
                 self.emit(Event::BombFound(BombFound { bot: bot, location: new_mine }));
             }
 

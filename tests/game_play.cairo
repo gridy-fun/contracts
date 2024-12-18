@@ -49,6 +49,18 @@ fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress) {
     (game_contract_address, bot_contract_address,executor_address)
 }
 
+
+
+#[test]
+fn game_contract_deploy_bot() {
+    let (game_contract_address, _,executor_address) = deploy_contract();
+    start_cheat_caller_address(game_contract_address, executor_address);
+    let player_address : ContractAddress = player_id.try_into().unwrap();
+    let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
+    game_contract.enable_contract();
+    game_contract.deploy_bot(player_address, 132123213)
+}
+
 #[test]
 #[should_panic(expected: 'contract is disabled')]
 fn check_game_contract_enabled_status() {
@@ -167,6 +179,25 @@ fn mine_with_dead_bot() {
     // kill bot
     start_cheat_caller_address(bot_contract_address, executor_address);
     bot_contract.kill_bot();
+
+    game_contract.mine(bot_contract_address, seed);
+}
+
+#[test]
+fn mine_a_bomb() {
+    // First declare and deploy a contract
+    let (game_contract_address, bot_contract_address,executor_address) = deploy_contract();
+    let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
+    let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
+
+    // owner operations 
+    start_cheat_caller_address(game_contract_address,executor_address);
+    game_contract.enable_contract();
+
+    start_cheat_block_number(bot_contract_address, 0x420_u64);
+    start_cheat_block_timestamp(bot_contract_address, 0x2137_u64);
+
+    let seed = 0x7b; // 123
 
     game_contract.mine(bot_contract_address, seed);
 }
