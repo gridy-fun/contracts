@@ -56,6 +56,10 @@ pub mod BotContract{
             self.executor.write(new_executor);
         }
 
+        fn get_coordinates_from_block_id(self: @ContractState, location: felt252) -> Span<u128> {
+            self.get_coordinates_from_blockid(location)
+        }
+
         fn compute_point(self: @ContractState, seed: u128) -> felt252 {
             assert(self.bot_enabled.read()==true, 'Bot is dead');
 
@@ -104,11 +108,10 @@ pub mod BotContract{
             // get block hash
             let block_timestamp= get_block_timestamp();
             let block_number=get_block_number();
-            let block_hash: felt252= get_block_hash_syscall(block_number-1).unwrap_syscall().into();
 
             // generate pedersen hash
             let random_number = pedersen(
-                pedersen(block_hash.into(),pedersen(block_timestamp.into(),get_contract_address().into())),
+                pedersen(block_number.into(),pedersen(block_timestamp.into(),get_contract_address().into())),
                 seed.into()
             );
 
@@ -119,16 +122,26 @@ pub mod BotContract{
 
         fn get_coordinates_from_blockid(self: @ContractState, point: felt252) -> Span<u128> {
             let mut block_id_formatted : u128= point.try_into().unwrap();
-            let divider: NonZero<u128> = self.grid_width.read().try_into().unwrap();
-            let (q, r) = DivRem::<u128>::div_rem(block_id_formatted, divider);
+            let grid_width = self.grid_width.read();
+            let grid_height= self.grid_height.read();
 
-            array![q, r].span()
+            let multiplier_0= grid_width * grid_width;
+            let multiplier_1= grid_width*grid_height*grid_height;
+
+            let x_low = (block_id_formatted % grid_width)-1;
+            block_id_formatted = block_id_formatted/grid_width;
+            let y_low = (block_id_formatted % grid_height)-1;
+
+            let x_high = (block_id_formatted%multiplier_0)-1;
+            let y_high = block_id_formatted/grid_height;
+
+            [(x_low + (x_high * grid_width)),y_low + (y_high * (grid_height * grid_height))].span()
         }
 
         fn get_blockid_from_coordinates(self: @ContractState, mut coordinates: Span<u128>) -> u256 {
             let grid_width = self.grid_width.read();
-            let block_id : u256 = (*coordinates[0] + (grid_width * *coordinates[1])).try_into().unwrap();
-            
+            let grid_height= self.grid_height.read();
+            let block_id : u256 = (*coordinates[0] + (grid_width * *coordinates[1]) + ((*coordinates[0]/grid_width)*grid_width*grid_height) + ((*coordinates[0]/(grid_height*grid_height))*grid_width*grid_height*grid_height)).try_into().unwrap();
             block_id.clone()
         }
     }

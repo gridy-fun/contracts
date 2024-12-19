@@ -10,6 +10,7 @@ pub mod bot {
 pub mod game {
     pub mod interface;
     pub mod main;
+    pub mod types;
 }
 
 pub mod mocks {

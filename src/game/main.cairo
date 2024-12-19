@@ -2,7 +2,7 @@
 pub mod GameContract{
     use starknet::{ContractAddress,ClassHash,get_contract_address, SyscallResultTrait};
     use gridy::{
-        game::{interface::IGameContract},
+        game::{interface::IGameContract,types::BlockPoint},
         bot::{interface::{IBotContractDispatcher,IBotContractDispatcherTrait}},
     };
     use core::starknet::storage::{
@@ -105,12 +105,6 @@ pub mod GameContract{
         location: felt252,
     }
 
-    #[derive(Drop, Serde, starknet::Store)]
-    pub struct BlockPoint {
-        id: felt252,
-        points: u128,
-    }
-
     #[constructor]
     fn constructor(
         ref self: ContractState, 
@@ -120,7 +114,7 @@ pub mod GameContract{
         mining_points: u128, 
         grid_width: u128, 
         grid_height: u128, 
-        // block_points: Span<BlockPoint>,
+        block_points: Span<BlockPoint>,
     ) {
         // Set the initial owner of the contract
         self.ownable.initializer(executor);
@@ -132,19 +126,26 @@ pub mod GameContract{
         self.bomb_value.write(bomb_value);
         self.bot_contract_class_hash.write(bot_contract_class_hash);
 
-        self.block_points_map.entry(14991605).write(666);
+        // add block points
+        let mut serialized = array![];
+        Serde::serialize(@block_points, ref serialized);
+        let mut span_array=serialized.span();
+        let deserialized_struct_array: Span<BlockPoint> = Serde::<Span<BlockPoint>>::deserialize(ref span_array).unwrap();
 
         // add block points
-        // let mut index=0;
-        // loop {
-        //     if index == block_points.len() {
-        //         break;
-        //     }
-        //     let block_point = *block_points.at(index);
-        //     let block_point = block_point.unwrap();
-        //     self.block_points_map.entry(block_point.id).write(block_point.points);
-        //     index += 1;
-        // }
+        let mut index=0;
+        loop {
+            if index == deserialized_struct_array.len() {
+                break;
+            }
+
+            let block_point= BlockPoint {
+                id: deserialized_struct_array.get(index).unwrap().id,
+                points:deserialized_struct_array.get(index).unwrap().points
+            };
+            self.block_points_map.entry(block_point.id).write(block_point.points);
+            index += 1;
+        }
     }
 
 
@@ -179,10 +180,13 @@ pub mod GameContract{
         }
 
         fn deploy_bot(ref self: ContractState, player: ContractAddress, location: felt252) {
+            assert(self.is_contract_enabled(), 'Contract is disabled');
+            
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
-            
-            assert(self.is_contract_enabled(), 'Contract is disabled');
+
+            // check if location not mined
+            assert(!self.check_if_already_mined(location), 'block already mined');
 
             // deploy bot class hash
             let bot_contract_class_hash = self.bot_contract_class_hash.read();
@@ -194,7 +198,7 @@ pub mod GameContract{
             location.serialize(ref bot_contract_constructor_args);
             self.grid_width.read().serialize(ref bot_contract_constructor_args);
             self.grid_height.read().serialize(ref bot_contract_constructor_args);
-            let (deployed_address,_) = deploy_syscall(bot_contract_class_hash.try_into().unwrap(), 0, bot_contract_constructor_args.span(), false).unwrap_syscall();
+            let (deployed_address,_) = deploy_syscall(bot_contract_class_hash.try_into().unwrap(), 0, bot_contract_constructor_args.span(), true).unwrap_syscall();
 
             self.emit(Event::SpawnedBot(SpawnedBot { player: player, location: location, bot_address: deployed_address }));
         }

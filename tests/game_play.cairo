@@ -1,11 +1,14 @@
 use snforge_std::{declare,ContractClassTrait, DeclareResultTrait, start_cheat_caller_address, start_cheat_block_timestamp, start_cheat_block_number};
 use gridy::{
-    game::interface::{IGameContractDispatcher, IGameContractDispatcherTrait},
+    game::{
+        interface::{IGameContractDispatcher, IGameContractDispatcherTrait},
+        types::BlockPoint
+    },
     bot::interface::{IBotContractDispatcher, IBotContractDispatcherTrait}
 };
 use starknet::{ContractAddress};
 use gridy::constants::{
-    player_id, block_id, grid_height, grid_width, bomb_value, mining_points
+    player_id, block_id, grid_height, grid_width, bomb_value, mining_points,point_1,point_2
 };
 
 
@@ -24,6 +27,8 @@ fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress) {
     // declare bot contract
     let bot_contract= declare("BotContract").unwrap().contract_class();
 
+    let mut block_points: Span<BlockPoint> = array![point_1,point_2].span();
+
     // deploy game contract
     let game_contract = declare("GameContract").unwrap().contract_class();
     let mut game_contract_constructor_args = ArrayTrait::new();
@@ -33,6 +38,7 @@ fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress) {
     mining_points.serialize(ref game_contract_constructor_args);
     grid_width.serialize(ref game_contract_constructor_args);
     grid_height.serialize(ref game_contract_constructor_args);
+    block_points.serialize(ref game_contract_constructor_args);
     let (game_contract_address, _) = game_contract.deploy(@game_contract_constructor_args).unwrap();
 
     // deploy bot contract
@@ -200,4 +206,43 @@ fn mine_a_bomb() {
     let seed = 0x7b; // 123
 
     game_contract.mine(bot_contract_address, seed);
+}
+
+#[test]
+fn deploy_multiple_bots(){
+    // First declare and deploy a contract
+    let (game_contract_address, bot_contract_address,executor_address) = deploy_contract();
+    let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
+    let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
+
+    // owner operations 
+    start_cheat_caller_address(game_contract_address,executor_address);
+    game_contract.enable_contract();
+
+    start_cheat_block_number(bot_contract_address, 0x420_u64);
+    start_cheat_block_timestamp(bot_contract_address, 0x2137_u64);
+
+    let seed = 0x7b; // 123
+
+    game_contract.mine(bot_contract_address, seed);
+
+    let player_address : ContractAddress = player_id.try_into().unwrap();
+    game_contract.deploy_bot(player_address, 132123213);
+    game_contract.deploy_bot(player_address, 123123);
+    game_contract.deploy_bot(player_address, 132122123213);
+}
+
+#[test]
+fn check_unique_block_id(){
+    // First declare and deploy a contract
+    let (game_contract_address, bot_contract_address,executor_address) = deploy_contract();
+    let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
+    let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
+
+    // owner operations 
+    start_cheat_caller_address(game_contract_address,executor_address);
+    game_contract.enable_contract();
+
+    start_cheat_block_number(bot_contract_address, 0x420_u64);
+    start_cheat_block_timestamp(bot_contract_address, 0x2137_u64);
 }
