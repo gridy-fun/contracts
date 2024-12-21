@@ -1,8 +1,7 @@
 #[starknet::contract]
 pub mod BotContract{
     use core::traits::TryInto;
-    use starknet::{ContractAddress,SyscallResultTrait, get_caller_address,get_block_number, get_block_timestamp,get_contract_address};
-    use core::starknet::syscalls::get_block_hash_syscall;
+    use starknet::{ContractAddress, get_caller_address,get_block_number, get_block_timestamp,get_contract_address};
     use gridy::bot::interface::IBotContract;
     use core::pedersen::pedersen;
     use core::option::OptionTrait;
@@ -125,24 +124,26 @@ pub mod BotContract{
             let grid_width = self.grid_width.read();
             let grid_height= self.grid_height.read();
 
-            let multiplier_0= grid_width * grid_width;
-            let multiplier_1= grid_width*grid_height*grid_height;
-
-            let x_low = (block_id_formatted % grid_width)-1;
+            let x_low = (block_id_formatted % grid_width);
             block_id_formatted = block_id_formatted/grid_width;
-            let y_low = (block_id_formatted % grid_height)-1;
+            let y_low = (block_id_formatted % grid_height);
 
-            let x_high = (block_id_formatted%multiplier_0)-1;
-            let y_high = block_id_formatted/grid_height;
-
-            [(x_low + (x_high * grid_width)),y_low + (y_high * (grid_height * grid_height))].span()
+            let x_high = (block_id_formatted%grid_height);
+            let y_high = block_id_formatted/(grid_height*grid_width);
+            [(x_low + (x_high * grid_width)),y_low + (y_high * grid_height)].span()
         }
 
-        fn get_blockid_from_coordinates(self: @ContractState, mut coordinates: Span<u128>) -> u256 {
+        fn get_blockid_from_coordinates(self: @ContractState, mut coordinates: Span<u128>) -> u128 {
             let grid_width = self.grid_width.read();
             let grid_height= self.grid_height.read();
-            let block_id : u256 = (*coordinates[0] + (grid_width * *coordinates[1]) + ((*coordinates[0]/grid_width)*grid_width*grid_height) + ((*coordinates[0]/(grid_height*grid_height))*grid_width*grid_height*grid_height)).try_into().unwrap();
-            block_id.clone()
-        }
+            let x_low = coordinates[0].clone() % grid_width;
+            let y_low = coordinates[1].clone() % grid_height;
+
+            let x_high = coordinates[0].clone() / grid_width;
+            let y_high = coordinates[1].clone() / grid_height;
+
+            let block_id = x_low + (y_low * grid_width) + (x_high * grid_height * grid_width) + (y_high * grid_height * grid_width * grid_height);
+            block_id
+        }   
     }
 }
