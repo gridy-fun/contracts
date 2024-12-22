@@ -123,29 +123,34 @@ pub mod BotContract{
 
         fn get_coordinates_from_blockid(self: @ContractState, point: felt252) -> Span<u128> {
             let mut block_id_formatted : u128= point.try_into().unwrap();
-            let grid_width = self.grid_width.read();
-            let grid_height= self.grid_height.read();
-
-            let x_low = (block_id_formatted % grid_width);
-            block_id_formatted = block_id_formatted/grid_width;
-            let y_low = (block_id_formatted % grid_height);
-
-            let x_high = (block_id_formatted%grid_height);
-            let y_high = block_id_formatted/(grid_height*grid_width);
-            [(x_low + (x_high * grid_width)),y_low + (y_high * grid_height)].span()
+            let mut assets = ArrayTrait::new();
+            let mut i = 0;
+            let divider: NonZero<u128> = 10001_u128.try_into().unwrap();
+            loop {
+                if i == 2 {
+                    break;
+                }
+                let (q, r) = DivRem::<u128>::div_rem(block_id_formatted, divider);
+                assets.append(r.try_into().unwrap());
+                block_id_formatted = q;
+                i += 1;
+            };
+            assets.span()
         }
 
         fn get_blockid_from_coordinates(self: @ContractState, mut coordinates: Span<u128>) -> u128 {
-            let grid_width = self.grid_width.read();
-            let grid_height= self.grid_height.read();
-            let x_low = coordinates[0].clone() % grid_width;
-            let y_low = coordinates[1].clone() % grid_height;
+            let mut acc = 0_u128;
+            let mut mult = 1_u128;
 
-            let x_high = coordinates[0].clone() / grid_width;
-            let y_high = coordinates[1].clone() / grid_height;
-
-            let block_id = x_low + (y_low * grid_width) + (x_high * grid_height * grid_width) + (y_high * grid_height * grid_width * grid_height);
-            block_id
+            loop {
+                if coordinates.len() == 0 {
+                    break;
+                }
+                let asset = coordinates.pop_front().unwrap();
+                acc += (*asset * mult);
+                mult *= 100001_u128;
+            };
+            acc
         }   
     }
 }
