@@ -229,6 +229,10 @@ pub mod GameContract{
             // generate random point from bot
             let new_mine : felt252 = bot_contract.compute_point(seed);
 
+            // check if 0
+            if (new_mine == 119001055159669204776739172) {
+                return;
+            }
             // get bomb denotion value
             let bomb_value=self.bomb_value.read();
 

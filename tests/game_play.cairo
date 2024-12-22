@@ -163,8 +163,7 @@ fn mine_different_blocks() {
     game_contract.mine(bot_contract_address, seed_2);
 }
 
-#[test]
-#[should_panic(expected: 'Bot is dead')]
+#[test] 
 fn mine_with_dead_bot() {
     // First declare and deploy a contract
     let (game_contract_address, bot_contract_address,executor_address) = deploy_contract();

@@ -60,7 +60,9 @@ pub mod BotContract{
         }
 
         fn compute_point(self: @ContractState, seed: u128) -> felt252 {
-            assert(self.bot_enabled.read()==true, 'Bot is dead');
+            if(self.bot_enabled.read() == false) {
+                return 119001055159669204776739172.into();
+            }
 
             let mut block_id: u256  = 0;
             let mut attempts : u128 = 0;
