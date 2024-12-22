@@ -269,7 +269,7 @@ pub mod GameContract{
             let bot_contract = IBotContractDispatcher { contract_address: bot };
 
             if suspend {
-                bot_contract.start_bot();
+                bot_contract.kill_bot();
                 self.emit(Event::SuspendBot(SuspendBot { bot_address: bot }));
                 return;
             }
