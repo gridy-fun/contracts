@@ -7,6 +7,7 @@ pub trait IGameContract<TContractState> {
     fn disable_contract(ref self: TContractState);
     fn update_executor_contract(ref self: TContractState, executor: ContractAddress);
     fn update_bomb_value(ref self: TContractState, bomb_value: u128);
+    fn manage_bot_suspension(ref self: TContractState, bot: ContractAddress, suspend: bool);
 
     // game functions
     fn deploy_bot(ref self: TContractState, player: ContractAddress, location: felt252);

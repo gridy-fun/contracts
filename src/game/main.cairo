@@ -69,6 +69,9 @@ pub mod GameContract{
         BombFound: BombFound,
         TileMined: TileMined,
         SpawnedBot: SpawnedBot,
+        SuspendBot: SuspendBot,
+        ReviveBot: ReviveBot,
+        TileAlreadyMined: TileAlreadyMined,
     }
 
 
@@ -88,6 +91,22 @@ pub mod GameContract{
 
     #[derive(Drop, starknet::Event)]
     struct BombFound {
+        bot_address: ContractAddress,
+        location: felt252,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct SuspendBot {
+        bot_address: ContractAddress
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct ReviveBot {
+        bot_address: ContractAddress
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct TileAlreadyMined {
         bot_address: ContractAddress,
         location: felt252,
     }
@@ -214,7 +233,10 @@ pub mod GameContract{
             let bomb_value=self.bomb_value.read();
 
             // check if block is already mined
-            assert(!self.check_if_already_mined(new_mine), 'block already mined');
+            if(self.check_if_already_mined(new_mine)){
+                self.emit(Event::TileAlreadyMined(TileAlreadyMined { bot_address : bot, location: new_mine }));
+                return;
+            }
 
             // check for diamond or bomb
             let block_points : u128 = self.block_points_map.entry(new_mine).read();
@@ -238,6 +260,22 @@ pub mod GameContract{
 
         fn is_contract_enabled(self: @ContractState) -> bool {
             self.contract_enabled.read()
+        }
+
+        fn manage_bot_suspension(ref self: ContractState, bot: ContractAddress, suspend: bool) {
+            // This function can only be called by the owner
+            self.ownable.assert_only_owner();
+
+            let bot_contract = IBotContractDispatcher { contract_address: bot };
+
+            if suspend {
+                bot_contract.start_bot();
+                self.emit(Event::SuspendBot(SuspendBot { bot_address: bot }));
+                return;
+            }
+
+            bot_contract.start_bot();
+            self.emit(Event::ReviveBot(ReviveBot { bot_address: bot }));
         }
 
         fn check_if_already_mined(self: @ContractState, block_id: felt252) -> bool {

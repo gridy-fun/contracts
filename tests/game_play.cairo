@@ -183,7 +183,7 @@ fn mine_with_dead_bot() {
     game_contract.mine(bot_contract_address, seed);
 
     // kill bot
-    start_cheat_caller_address(bot_contract_address, executor_address);
+    start_cheat_caller_address(bot_contract_address, game_contract_address);
     bot_contract.kill_bot();
 
     game_contract.mine(bot_contract_address, seed);

@@ -41,17 +41,17 @@ pub mod BotContract{
     #[abi(embed_v0)]
     impl BotContract of IBotContract<ContractState> {
         fn start_bot(ref self: ContractState) {
-            assert(self.executor.read() == get_caller_address(),'Only admin can start');
+            assert(self.game_contract.read() == get_caller_address(),'Only admin can start');
             self.bot_enabled.write(true);
         }
 
         fn kill_bot(ref self: ContractState) {
-            assert(self.executor.read() == get_caller_address(),'Only admin can kill');
+            assert(self.game_contract.read() == get_caller_address(),'Only admin can kill');
             self.bot_enabled.write(false);
         }
 
         fn update_owner(ref self: ContractState, new_executor: ContractAddress) {
-            assert(self.executor.read() == get_caller_address(),'Only admin can update');
+            assert(self.game_contract.read() == get_caller_address(),'Only admin can update');
             self.executor.write(new_executor);
         }
 
