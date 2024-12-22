@@ -123,34 +123,17 @@ pub mod BotContract{
 
         fn get_coordinates_from_blockid(self: @ContractState, point: felt252) -> Span<u128> {
             let mut block_id_formatted : u128= point.try_into().unwrap();
-            let mut assets = ArrayTrait::new();
-            let mut i = 0;
-            let divider: NonZero<u128> = 10001_u128.try_into().unwrap();
-            loop {
-                if i == 2 {
-                    break;
-                }
-                let (q, r) = DivRem::<u128>::div_rem(block_id_formatted, divider);
-                assets.append(r.try_into().unwrap());
-                block_id_formatted = q;
-                i += 1;
-            };
-            assets.span()
+            let divider: NonZero<u128> = self.grid_width.read().try_into().unwrap();
+            let (q, r) = DivRem::<u128>::div_rem(block_id_formatted, divider);
+
+            array![q, r].span()
         }
 
         fn get_blockid_from_coordinates(self: @ContractState, mut coordinates: Span<u128>) -> u128 {
-            let mut acc = 0_u128;
-            let mut mult = 1_u128;
+            let grid_width = self.grid_width.read();
+            let block_id = (*coordinates[0] + (grid_width * *coordinates[1])).try_into().unwrap();
 
-            loop {
-                if coordinates.len() == 0 {
-                    break;
-                }
-                let asset = coordinates.pop_front().unwrap();
-                acc += (*asset * mult);
-                mult *= 100001_u128;
-            };
-            acc
+            block_id.clone()
         }   
     }
 }
