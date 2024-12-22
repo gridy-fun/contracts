@@ -74,34 +74,28 @@ pub mod GameContract{
 
     #[derive(Drop, starknet::Event)]
     struct DiamondFound {
-        #[key]
-        bot: ContractAddress,
-        #[key]
+        bot_address: ContractAddress,
         points: u128,
-        #[key]
         location: felt252,
     }
 
     #[derive(Drop, starknet::Event)]
     struct SpawnedBot {
+        bot_address: ContractAddress,
         player: ContractAddress,
         location: felt252,
-        bot_address: ContractAddress,
     }
 
     #[derive(Drop, starknet::Event)]
     struct BombFound {
-        bot: ContractAddress,
+        bot_address: ContractAddress,
         location: felt252,
     }
 
     #[derive(Drop, starknet::Event)]
     struct TileMined {
-        #[key]
-        bot: ContractAddress,
-        #[key]
+        bot_address: ContractAddress,
         points: u128,
-        #[key]
         location: felt252,
     }
 
@@ -227,19 +221,19 @@ pub mod GameContract{
 
             // check if location contains a diamond
             if block_points != 0 && block_points != bomb_value {
-                self.emit(Event::DiamondFound(DiamondFound { bot, points: block_points, location: new_mine }));
+                self.emit(Event::DiamondFound(DiamondFound { bot_address : bot, points: block_points, location: new_mine }));
             }
 
             // check if location contains a bomb
             else if block_points == bomb_value {
                 bot_contract.kill_bot();
-                self.emit(Event::BombFound(BombFound { bot: bot, location: new_mine }));
+                self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
             }
 
             // mine the tile
             self.mined_tiles.entry(new_mine).write(true);
 
-            self.emit(Event::TileMined(TileMined { bot, points: self.mining_points.read(), location: new_mine }));
+            self.emit(Event::TileMined(TileMined { bot_address: bot, points: self.mining_points.read(), location: new_mine }));
         }
 
         fn is_contract_enabled(self: @ContractState) -> bool {
