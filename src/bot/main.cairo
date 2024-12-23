@@ -78,7 +78,7 @@ pub mod BotContract{
                 let (x,y) = self.generate_random_number(seed + attempts);
 
                 // check if block is mined
-                block_id = self.get_blockid_from_coordinates(array![(x % self.grid_width.read()) + 1,((y / self.grid_height.read()) % self.grid_height.read()) + 1].span()).try_into().unwrap();
+                block_id = self.get_blockid_from_coordinates(array![(x % self.grid_width.read()),(y % self.grid_height.read())].span()).try_into().unwrap();
                 let is_block_mined = IGameContractDispatcher { contract_address: self.game_contract.read() }.check_if_already_mined(block_id.low.into());
 
                 // if block is not mined then break
