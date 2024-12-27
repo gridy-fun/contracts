@@ -1,8 +1,8 @@
 #[starknet::contract]
 pub mod GameContract{
-    use starknet::{ContractAddress,ClassHash,get_contract_address, SyscallResultTrait};
+    use starknet::{ContractAddress,ClassHash,get_contract_address, get_caller_address, SyscallResultTrait};
     use gridy::{
-        game::{interface::IGameContract,types::BlockPoint},
+        game::{interface::IGameContract},
         bot::{interface::{IBotContractDispatcher,IBotContractDispatcherTrait}},
     };
     use core::starknet::storage::{
@@ -43,10 +43,16 @@ pub mod GameContract{
         mining_points: u128,
 
         // address of executor contract
-        executor: ContractAddress,
+        sequencer: ContractAddress,
 
         //mined tiles map
         mined_tiles: Map<felt252, bool>,
+
+        // total count of diamonds and bombs
+        total_diamonds_and_bombs: u128,
+
+        // counter for block point locations
+        block_points_counter: u128,
 
         // add grid dimensions
         grid_width: u128,
@@ -127,38 +133,20 @@ pub mod GameContract{
         mining_points: u128, 
         grid_width: u128, 
         grid_height: u128, 
-        block_points: Span<BlockPoint>,
+        total_diamonds_and_bombs: u128,
+        sequencer: ContractAddress
     ) {
         // Set the initial owner of the contract
         self.ownable.initializer(executor);
         self.contract_enabled.write(false);
         self.mining_points.write(mining_points);
-        self.executor.write(executor);
+        self.sequencer.write(sequencer);
         self.grid_width.write(grid_width);
         self.grid_height.write(grid_height);
         self.bomb_value.write(bomb_value);
         self.bot_contract_class_hash.write(bot_contract_class_hash);
-
-        // add block points
-        let mut serialized = array![];
-        Serde::serialize(@block_points, ref serialized);
-        let mut span_array=serialized.span();
-        let deserialized_struct_array: Span<BlockPoint> = Serde::<Span<BlockPoint>>::deserialize(ref span_array).unwrap();
-
-        // add block points
-        let mut index=0;
-        loop {
-            if index == deserialized_struct_array.len() {
-                break;
-            }
-
-            let block_point= BlockPoint {
-                id: deserialized_struct_array.get(index).unwrap().id,
-                points:deserialized_struct_array.get(index).unwrap().points
-            };
-            self.block_points_map.entry(block_point.id).write(block_point.points);
-            index += 1;
-        }
+        self.total_diamonds_and_bombs.write(total_diamonds_and_bombs);
+        self.block_points_counter.write(0);
     }
 
 
@@ -168,7 +156,13 @@ pub mod GameContract{
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
 
-            self.contract_enabled.write(true);
+            if self.block_points_counter.read() == self.total_diamonds_and_bombs.read() {
+                self.contract_enabled.write(true);
+            }
+            else {
+                panic!("Insufficient block points");
+            }
+
         }
 
         fn disable_contract(ref self: ContractState) {
@@ -178,11 +172,19 @@ pub mod GameContract{
             self.contract_enabled.write(false);
         }
 
-        fn update_executor_contract(ref self: ContractState, executor: ContractAddress) {
+        fn update_executor_contract(ref self: ContractState, sequencer: ContractAddress) {
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
 
-            self.executor.write(executor);
+            self.sequencer.write(sequencer);
+        }
+
+        fn update_block_points(ref self: ContractState, block_id: felt252, points: u128) {
+            // This function can only be called by the owner
+            self.ownable.assert_only_owner();
+
+            self.block_points_map.entry(block_id).write(points);
+            self.block_points_counter.write(self.block_points_counter.read() + 1);
         }
 
         fn update_bomb_value(ref self: ContractState, bomb_value: u128){
@@ -205,7 +207,7 @@ pub mod GameContract{
             let bot_contract_class_hash = self.bot_contract_class_hash.read();
             let contract_address = get_contract_address();
             let mut bot_contract_constructor_args = ArrayTrait::new();
-            self.executor.read().serialize(ref bot_contract_constructor_args);
+            self.ownable.owner().serialize(ref bot_contract_constructor_args);
             player.serialize(ref bot_contract_constructor_args);
             contract_address.serialize(ref bot_contract_constructor_args);
             location.serialize(ref bot_contract_constructor_args);
@@ -217,8 +219,10 @@ pub mod GameContract{
         }
 
         fn mine(ref self: ContractState, bot: ContractAddress, seed: u128) {
-            // This function can only be called by the owner
-            self.ownable.assert_only_owner();
+            let caller = get_caller_address();
+            
+            // This function can only be called by the admins
+            assert(self.sequencer.read() == caller || self.ownable.owner() == caller, 'Only admins can mine');
 
             // check if contract is disabled
             assert(self.is_contract_enabled(), 'Contract is disabled');

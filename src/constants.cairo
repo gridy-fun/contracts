@@ -7,5 +7,6 @@ pub const grid_width : u128=7000;
 pub const grid_height : u128=5000;
 pub const bomb_value: u128 = 666;
 pub const mining_points: u128 = 1;
+pub const total_points: u128 = 2;
 pub const point_1: BlockPoint = BlockPoint {id:12312312, points:10};
 pub const point_2: BlockPoint = BlockPoint {id:1222222, points:666};
