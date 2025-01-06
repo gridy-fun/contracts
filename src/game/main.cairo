@@ -201,7 +201,10 @@ pub mod GameContract{
             self.ownable.assert_only_owner();
 
             // check if location not mined
-            assert(!self.check_if_already_mined(location), 'block already mined');
+            // assert(!self.check_if_already_mined(location), 'tile already mined');
+            if self.check_if_already_mined(location) {
+                return ();
+            }
 
             // deploy bot class hash
             let bot_contract_class_hash = self.bot_contract_class_hash.read();
