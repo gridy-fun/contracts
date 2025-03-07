@@ -5,6 +5,7 @@ pub trait IGameContract<TContractState> {
     // admin functions 
     fn enable_contract(ref self: TContractState);
     fn disable_contract(ref self: TContractState);
+    fn set_game_currency(ref self: TContractState, currency: ContractAddress);
     fn update_executor_contract(ref self: TContractState, sequencer: ContractAddress);
     fn update_bomb_value(ref self: TContractState, bomb_value: u128);
     fn manage_bot_suspension(ref self: TContractState, bot: ContractAddress, suspend: bool);

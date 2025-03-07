@@ -2,9 +2,7 @@ pub mod bot {
     pub mod main;
     pub mod interface;
 
-    pub use interface::{
-        IBotContract
-    };
+    pub use interface::{IBotContract};
 }
 
 pub mod game {
@@ -15,6 +13,11 @@ pub mod game {
 
 pub mod mocks {
     pub mod account_mock;
+}
+
+pub mod registries {
+    pub mod l2_registry;
+    pub mod l3_registry;
 }
 
 pub mod constants;

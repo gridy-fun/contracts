@@ -1,34 +1,34 @@
-use snforge_std::{declare,ContractClassTrait, DeclareResultTrait, start_cheat_caller_address, start_cheat_block_timestamp, start_cheat_block_number};
-use gridy::{
-    game::{
-        interface::{IGameContractDispatcher, IGameContractDispatcherTrait},
-        types::BlockPoint
-    },
-    bot::interface::{IBotContractDispatcher, IBotContractDispatcherTrait}
-};
-use starknet::{ContractAddress};
+use gridy::bot::interface::{IBotContractDispatcher, IBotContractDispatcherTrait};
 use gridy::constants::{
-    player_id, block_id, grid_height, grid_width, bomb_value, mining_points,point_1,point_2, total_points
+    block_id, bomb_value, grid_height, grid_width, mining_points, player_id, point_1, point_2,
+    total_points,
 };
+use gridy::game::interface::{IGameContractDispatcher, IGameContractDispatcherTrait};
+use gridy::game::types::BlockPoint;
+use snforge_std::{
+    ContractClassTrait, DeclareResultTrait, declare, start_cheat_block_number,
+    start_cheat_block_timestamp, start_cheat_caller_address,
+};
+use starknet::ContractAddress;
 
 
 fn setup_user_account(pub_key: felt252) -> ContractAddress {
     let account = declare("SnakeAccountMock").unwrap().contract_class();
     let mut account_constructor_args = ArrayTrait::new();
     pub_key.serialize(ref account_constructor_args);
-    let (account_contract_address, _) =  account.deploy(@account_constructor_args).unwrap();
+    let (account_contract_address, _) = account.deploy(@account_constructor_args).unwrap();
     account_contract_address
 }
 
-fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress,ContractAddress) {
+fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress, ContractAddress) {
     // setup admin account
     let executor_address = setup_user_account('PUBKEY_1');
     let sequencer_address = setup_user_account('PUBKEY_2');
 
     // declare bot contract
-    let bot_contract= declare("BotContract").unwrap().contract_class();
+    let bot_contract = declare("BotContract").unwrap().contract_class();
 
-    let mut block_points: Span<BlockPoint> = array![point_1,point_2].span();
+    let mut block_points: Span<BlockPoint> = array![point_1, point_2].span();
 
     // deploy game contract
     let game_contract = declare("GameContract").unwrap().contract_class();
@@ -45,7 +45,7 @@ fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress,Contr
 
     // deploy bot contract
     let mut bot_contract_constructor_args = ArrayTrait::new();
-    let player_address : ContractAddress = player_id.try_into().unwrap();
+    let player_address: ContractAddress = player_id.try_into().unwrap();
     executor_address.serialize(ref bot_contract_constructor_args);
     player_address.serialize(ref bot_contract_constructor_args);
     game_contract_address.serialize(ref bot_contract_constructor_args);
@@ -54,18 +54,17 @@ fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress,Contr
     grid_width.serialize(ref bot_contract_constructor_args);
     let (bot_contract_address, _) = bot_contract.deploy(@bot_contract_constructor_args).unwrap();
 
-    (game_contract_address, bot_contract_address,executor_address, sequencer_address)
+    (game_contract_address, bot_contract_address, executor_address, sequencer_address)
 }
-
 
 
 #[test]
 fn game_contract_deploy_bot() {
-    let (game_contract_address, _,executor_address,_) = deploy_contract();
+    let (game_contract_address, _, executor_address, _) = deploy_contract();
     start_cheat_caller_address(game_contract_address, executor_address);
-    let player_address : ContractAddress = player_id.try_into().unwrap();
+    let player_address: ContractAddress = player_id.try_into().unwrap();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
-    
+
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
@@ -79,7 +78,7 @@ fn game_contract_deploy_bot() {
 #[test]
 #[should_panic(expected: 'contract is disabled')]
 fn check_game_contract_enabled_status() {
-    let (game_contract_address, _,_,_) = deploy_contract();
+    let (game_contract_address, _, _, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let game = game_contract.is_contract_enabled();
     assert(game == true, 'contract is disabled');
@@ -88,7 +87,7 @@ fn check_game_contract_enabled_status() {
 
 #[test]
 fn check_bot_contract_enabled_status() {
-    let (_, bot_contract_address,_,_) = deploy_contract();
+    let (_, bot_contract_address, _, _) = deploy_contract();
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
     let bot = bot_contract.is_bot_alive();
     assert(bot == true, 'contract is disabled');
@@ -96,12 +95,12 @@ fn check_bot_contract_enabled_status() {
 #[test]
 fn check_game_bot_enabled() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,_) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,executor_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
@@ -112,17 +111,18 @@ fn check_game_bot_enabled() {
 
     // check storage of the contract
     let bot = bot_contract.is_bot_alive();
-    assert(bot == true, 'contract is disabled'); 
+    assert(bot == true, 'contract is disabled');
 }
 
 #[test]
 fn mine_block() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,sequencer_address) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, sequencer_address) =
+        deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
+    // owner operations
     start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
@@ -135,7 +135,7 @@ fn mine_block() {
     start_cheat_block_number(bot_contract_address, 0x420_u64);
     start_cheat_block_timestamp(bot_contract_address, 0x2137_u64);
 
-    // add seed value 
+    // add seed value
     let seed_1 = 0x7b; // 123
 
     game_contract.mine(bot_contract_address, seed_1);
@@ -144,17 +144,17 @@ fn mine_block() {
 #[test]
 fn mine_different_blocks() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,_) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,executor_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
-    
+
     // enable contract
     game_contract.enable_contract();
 
@@ -168,20 +168,20 @@ fn mine_different_blocks() {
     game_contract.mine(bot_contract_address, seed_2);
 }
 
-#[test] 
+#[test]
 fn mine_with_dead_bot() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,_) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,executor_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
-    
+
     // enable contract
     game_contract.enable_contract();
 
@@ -202,17 +202,17 @@ fn mine_with_dead_bot() {
 #[test]
 fn mine_a_bomb() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,_) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,executor_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
-    
+
     // enable contract
     game_contract.enable_contract();
 
@@ -225,19 +225,19 @@ fn mine_a_bomb() {
 }
 
 #[test]
-fn deploy_multiple_bots(){
+fn deploy_multiple_bots() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,_) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,executor_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
-    
+
     // enable contract
     game_contract.enable_contract();
 
@@ -248,26 +248,26 @@ fn deploy_multiple_bots(){
 
     game_contract.mine(bot_contract_address, seed);
 
-    let player_address : ContractAddress = player_id.try_into().unwrap();
+    let player_address: ContractAddress = player_id.try_into().unwrap();
     game_contract.deploy_bot(player_address, 132123213);
     game_contract.deploy_bot(player_address, 123123);
     game_contract.deploy_bot(player_address, 132122123213);
 }
 
 #[test]
-fn check_unique_block_id(){
+fn check_unique_block_id() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,_) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,executor_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
-    
+
     // enable contract
     game_contract.enable_contract();
 
@@ -276,57 +276,57 @@ fn check_unique_block_id(){
 }
 
 #[test]
-fn mine_with_sequencer(){
+fn mine_with_sequencer() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,executor_address,sequencer_address) = deploy_contract();
+    let (game_contract_address, bot_contract_address, executor_address, sequencer_address) =
+        deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,executor_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, executor_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
-    
+
     // enable contract
     game_contract.enable_contract();
 
     start_cheat_block_number(bot_contract_address, 0x420_u64);
     start_cheat_block_timestamp(bot_contract_address, 0x2137_u64);
 
-    let seed_1= 0x7c; // 124
+    let seed_1 = 0x7c; // 124
 
-    start_cheat_caller_address(game_contract_address,sequencer_address);
+    start_cheat_caller_address(game_contract_address, sequencer_address);
     game_contract.mine(bot_contract_address, seed_1);
 }
 
 
 #[test]
 #[should_panic(expected: 'Caller is not the owner')]
-fn mine_with_random_address(){
+fn mine_with_random_address() {
     // First declare and deploy a contract
-    let (game_contract_address, bot_contract_address,_,_) = deploy_contract();
+    let (game_contract_address, bot_contract_address, _, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
 
-    let player_address : ContractAddress = player_id.try_into().unwrap();
+    let player_address: ContractAddress = player_id.try_into().unwrap();
 
-
-    // owner operations 
-    start_cheat_caller_address(game_contract_address,player_address);
+    // owner operations
+    start_cheat_caller_address(game_contract_address, player_address);
 
     // add block points
     game_contract.update_block_points(12312312, 10);
     game_contract.update_block_points(1222222, 666);
-    
+
     // enable contract
     game_contract.enable_contract();
 
     start_cheat_block_number(bot_contract_address, 0x420_u64);
     start_cheat_block_timestamp(bot_contract_address, 0x2137_u64);
 
-    let seed_1= 0x7c; // 124
+    let seed_1 = 0x7c; // 124
 
     game_contract.mine(bot_contract_address, seed_1);
 }

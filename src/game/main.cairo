@@ -1,20 +1,19 @@
 #[starknet::contract]
 pub mod GameContract {
-    use starknet::{
-        ContractAddress, ClassHash, get_contract_address, get_caller_address, SyscallResultTrait,
-    };
-    use gridy::{
-        game::{interface::IGameContract},
-        bot::{interface::{IBotContractDispatcher, IBotContractDispatcherTrait}},
-    };
-    use core::starknet::storage::{
+    use gridy::bot::interface::{IBotContractDispatcher, IBotContractDispatcherTrait};
+    use gridy::game::interface::IGameContract;
+    use openzeppelin::access::ownable::OwnableComponent;
+    use openzeppelin::token::erc20::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
+    use openzeppelin::upgrades::UpgradeableComponent;
+    use openzeppelin::upgrades::interface::IUpgradeable;
+    use core::num::traits::Zero;
+    use starknet::storage::{
         Map, StoragePathEntry, StoragePointerReadAccess, StoragePointerWriteAccess,
     };
-    use openzeppelin::{
-        access::ownable::OwnableComponent,
-        upgrades::{UpgradeableComponent, interface::IUpgradeable},
-    };
     use starknet::syscalls::deploy_syscall;
+    use starknet::{
+        ClassHash, ContractAddress, SyscallResultTrait, get_caller_address, get_contract_address,
+    };
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
@@ -50,6 +49,16 @@ pub mod GameContract {
         // add grid dimensions
         grid_width: u128,
         grid_height: u128,
+        // starting amount to play the game
+        boot_amount: felt252,
+        // Total points awarded yet
+        total_points: felt252,
+        total_players: felt252,
+        id_to_player: Map<felt252, ContractAddress>,
+        player_to_points: Map<ContractAddress, felt252>,
+        bot_to_player: Map<ContractAddress, ContractAddress>,
+        played_till: felt252,
+        game_currency: ERC20ABIDispatcher,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
         #[substorage(v0)]
@@ -127,6 +136,7 @@ pub mod GameContract {
         grid_height: u128,
         total_diamonds_and_bombs: u128,
         sequencer: ContractAddress,
+        boot_amount: felt252,
     ) {
         // Set the initial owner of the contract
         self.ownable.initializer(executor);
@@ -139,6 +149,8 @@ pub mod GameContract {
         self.bot_contract_class_hash.write(bot_contract_class_hash);
         self.total_diamonds_and_bombs.write(total_diamonds_and_bombs);
         self.block_points_counter.write(0);
+        
+        self.boot_amount.write(boot_amount);
     }
 
 
@@ -153,6 +165,12 @@ pub mod GameContract {
             } else {
                 panic!("Insufficient block points");
             }
+        }
+
+        fn set_game_currency(ref self: ContractState, currency: ContractAddress) {
+            // This function can only be called by the owner
+            self.ownable.assert_only_owner();
+            self.game_currency.write(ERC20ABIDispatcher { contract_address: currency });
         }
 
         fn disable_contract(ref self: ContractState) {
@@ -187,11 +205,14 @@ pub mod GameContract {
         fn deploy_bot(ref self: ContractState, player: ContractAddress, location: felt252) {
             assert(self.is_contract_enabled(), 'Contract is disabled');
 
-            // This function can only be called by the owner
-            self.ownable.assert_only_owner();
-
             // check if location not mined
             assert(!self.check_if_already_mined(location), 'block already mined');
+            assert(!self.game_currency.read().contract_address.is_zero(), 'Game currency not set');
+
+            self
+                .game_currency
+                .read()
+                .transfer_from(player, get_contract_address(), self.boot_amount.read().into());
 
             // deploy bot class hash
             let bot_contract_class_hash = self.bot_contract_class_hash.read();
@@ -210,6 +231,8 @@ pub mod GameContract {
                 true,
             )
                 .unwrap_syscall();
+
+            self.setup_player(player, deployed_address);
 
             self
                 .emit(
@@ -262,6 +285,11 @@ pub mod GameContract {
 
             // check if location contains a diamond
             if block_points != 0 && block_points != bomb_value {
+                let player = self.bot_to_player.entry(bot).read();
+                self
+                    .player_to_points
+                    .entry(bot)
+                    .write(self.player_to_points.entry(player).read() + block_points.into());
                 self
                     .emit(
                         Event::DiamondFound(
@@ -313,6 +341,18 @@ pub mod GameContract {
             self.mined_tiles.entry(block_id).read()
         }
     }
+
+    #[generate_trait]
+    pub impl GameContractImpl of GameContractInternalTrait {
+        fn setup_player(
+            ref self: ContractState, player: ContractAddress, bot_address: ContractAddress,
+        ) {
+            self.total_players.write(self.total_players.read() + 1);
+            self.id_to_player.entry(self.total_players.read()).write(player);
+            self.bot_to_player.entry(bot_address).write(player);
+        }
+    }
+
 
     #[abi(embed_v0)]
     impl UpgradeableImpl of IUpgradeable<ContractState> {
