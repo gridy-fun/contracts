@@ -37,11 +37,11 @@ const CONFIG = {
     DIAMOND_VALUE: 5000,
     BOMB_VALUE: 666,
     BOOT_AMOUNT: 10n * 10n ** 18n,
-    CURRENCY: "",
+    CURRENCY: "0x137113c20ec598274978b10a3720ec692a13215f5980196641d2ca67c3fa9a8",
   },
-  ASSETS_PATH: "./assets",
+  ASSETS_PATH: "./scripts/assets",
   CONTRACT_ADDRESSES: {
-    GAME: "w",
+    GAME: "0x3316bcc1ff919bf8f2f14b980cfe625ce5d9176a23eab9819b26e22eb0e89f5",
     BRIDGE: "0x68a7cf80bd038300bc7455f8d12b07442a2b08694e173d26c48c77495e23fd4", // this is l2 bridge(on starknet sepolia) or TokenBridge_starknet_bridge
     SPAWNERS: [
       "0x4b1858b51b856878890a229a5865daf98e4c1743a2c33de2f6b018f60ecc169",
@@ -391,9 +391,7 @@ class StarknetDeployer {
       contract: this.contracts.l2Registry.sierra,
       casm: this.contracts.l2Registry.casm,
       constructorCalldata: [CONFIG.CONTRACT_ADDRESSES.BRIDGE],
-    },
-      { maxFee: 0 }
-    );
+    });
     const receipt = await this.l2_account.waitForTransaction(declareAndDeployResponse.deploy.transaction_hash);
     console.log('Transaction Hash:', declareAndDeployResponse.deploy.transaction_hash);
     return receipt;
@@ -701,6 +699,8 @@ class DeploymentCLI {
 
   async showMenu() {
     console.log('\n🚀 Starknet Deployment Menu\n');
+    console.log('-3. Declare and Deploy L2 Registry Contract');
+    console.log('-2. Declare and Deploy L3 Registry Contract');
     console.log('-1. Declare and Deploy Game Contract');
     console.log('0. Declare Game Contract');
     console.log('1. Deploy Game Contract');
@@ -713,6 +713,7 @@ class DeploymentCLI {
     console.log('8. Disable Game Contract');
     console.log("9. Check is bot alive")
     console.log('10. Exit');
+    console.log('11. Set Game Currency');
 
     console.log('\nSelect an option (1-8):');
   }
@@ -720,6 +721,9 @@ class DeploymentCLI {
   async handleUserInput(input) {
     try {
       switch (input) {
+        case '-3':
+          await this.declareAndDeployL2RegistryContract();
+          break;
         case '-2':
           await this.declareAndDeployL3RegistryContract();
           break;
@@ -800,6 +804,12 @@ class DeploymentCLI {
     console.log('\n📦 Declaring and Deploying L3 Registry Contract...');
     const result = await this.deployer.declareAndDeployL3RegistryContract();
     console.log('✅ L3 Registry Contract declared and deployed successfully!');
+  }
+
+  async declareAndDeployL2RegistryContract() {
+    console.log('\n📦 Declaring and Deploying L2 Registry Contract...');
+    const result = await this.deployer.declareAndDeployL2RegistryContract();
+    console.log('✅ L2 Registry Contract declared and deployed successfully!');
   }
 
 
