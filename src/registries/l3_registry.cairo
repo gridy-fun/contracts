@@ -1,7 +1,7 @@
 #[starknet::contract]
 mod l2_registry {
     use openzeppelin::token::erc20::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
-    use starknet::storage::{Map, StoragePointerReadAccess, StoragePointerWriteAccess};
+    use starknet::storage::{ StoragePointerReadAccess, StoragePointerWriteAccess};
     use starknet::{ContractAddress, SyscallResultTrait, syscalls};
 
     #[storage]
