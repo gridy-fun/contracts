@@ -12,7 +12,7 @@ const CONFIG = {
     NODE_L3_URL: "http://localhost:9944",
     NODE_L2_URL: "https://starknet-sepolia.g.alchemy.com/v2/gbyYKt74AtTbRcgTSFP45xXuFUFdTH3D"
   },
-  DEPLOYMENT_PER_SPAWNER: 88,
+  DEPLOYMENT_PER_SPAWNER: 1,
   MULTICALL_SIZE: 500,
   // MADARA DEVNET ACCOUNT #1 (SEQUENCER)
   SEQUENCER: {
@@ -306,27 +306,26 @@ class StarknetDeployer {
       num_diamond_calls++;
     }
 
-    // for (let i = 0; i < num_diamond_calls; i++) {
-    //   const diamondsChunk = diamonds.slice(i * CONFIG.MULTICALL_SIZE, (i + 1) * CONFIG.MULTICALL_SIZE);
-    //   const diamondCalls = diamondsChunk.map(diamond => {
-    //     return gameContract.populate("update_block_points", [
-    //       diamond.id,
-    //       diamond.points
-    //     ]);
-    //   });
-    //   const estimatedFee = await this.l3_account.estimateInvokeFee(diamondCalls);
+    for (let i = 0; i < num_diamond_calls; i++) {
+      const diamondsChunk = diamonds.slice(i * CONFIG.MULTICALL_SIZE, (i + 1) * CONFIG.MULTICALL_SIZE);
+      const diamondCalls = diamondsChunk.map(diamond => {
+        return gameContract.populate("update_block_points", [
+          diamond.id,
+          diamond.points
+        ]);
+      });
+      const estimatedFee = await this.l3_account.estimateInvokeFee(diamondCalls);
 
-    //   const { transaction_hash } = await this.l3_account.execute(
-    //     diamondCalls,
-    //     undefined,
-    //     {
-    //       maxFee: 0n
-    //     }
-    //   );
+      const { transaction_hash } = await this.l3_account.execute(
+        diamondCalls,
+        {
+          maxFee: 0n
+        }
+      );
 
-    //   const receipt = await this.l3_account.waitForTransaction(transaction_hash);
-    //   console.log("Diamonds slice ", i * CONFIG.MULTICALL_SIZE , "to ", (i + 1) * CONFIG.MULTICALL_SIZE, " updated! with transaction hash: ", receipt.transaction_hash);
-    // }
+      const receipt = await this.l3_account.waitForTransaction(transaction_hash);
+      console.log("Diamonds slice ", i * CONFIG.MULTICALL_SIZE , "to ", (i + 1) * CONFIG.MULTICALL_SIZE, " updated! with transaction hash: ", receipt.transaction_hash);
+    }
 
     // call contract's update_block_points in a multicall set of  500 only bombs
     let num_bomb_calls = (bombs.length / CONFIG.MULTICALL_SIZE) >> 0;
@@ -346,7 +345,6 @@ class StarknetDeployer {
 
       const { transaction_hash } = await this.l3_account.execute(
         bombCalls,
-        undefined,
         {
           maxFee: 0n
         }
@@ -411,6 +409,26 @@ class StarknetDeployer {
     const receipt = await this.l3_account.waitForTransaction(deployResponse.transaction_hash);
     console.log('Game Contract Address:', deployResponse.contract_address[0]);
     return deployResponse;
+  }
+
+  async upgradeGameContract() {
+    const gameContract = new Contract(
+      this.contracts.game.sierra.abi,
+      CONFIG.CONTRACT_ADDRESSES.GAME,
+      this.provider
+    );
+    const upgradeCall = gameContract.populate("upgrade", {
+      new_class_hash: await this.getGameClassHash()
+    });
+    const estimatedFee = await this.l3_account.estimateInvokeFee(upgradeCall);
+    const { transaction_hash } = await this.l3_account.execute(
+      upgradeCall,
+      { 
+        maxFee: 0n
+      }
+    );
+    const receipt = await this.l3_account.waitForTransaction(transaction_hash);
+    return { transaction_hash, receipt };
   }
 
   async declareBotContract() {
@@ -714,6 +732,7 @@ class DeploymentCLI {
     console.log("9. Check is bot alive")
     console.log('10. Exit');
     console.log('11. Set Game Currency');
+    console.log('12. Upgrade Game Contract');
 
     console.log('\nSelect an option (1-8):');
   }
@@ -768,6 +787,9 @@ class DeploymentCLI {
         case '11':
           await this.setGameCurrency();
           break;
+        case '12':
+          await this.upgradeGameContract();
+          break;
 
         default:
           console.log('\n❌ Invalid option. Please try again.');
@@ -812,15 +834,11 @@ class DeploymentCLI {
     console.log('✅ L2 Registry Contract declared and deployed successfully!');
   }
 
-
   async getBlockTxns() {
     console.log('\n📦 Getting Block Transactions...')
     let x = await this.deployer.getBlockTxns();
     console.log('✅ Block Transactions fetched successfully!');
   }
-
-
-
 
   async updateBlockPoints() {
     console.log('\n📦 Adding Block Points...');
@@ -848,6 +866,13 @@ class DeploymentCLI {
     console.log('\n🔓 Setting Game Currency...');
     const result = await this.deployer.setGameCurrency(CONFIG.GAME.CURRENCY);
     console.log('✅ Game Currency set successfully!');
+    console.log('Transaction Hash:', result.transaction_hash);
+  }
+
+  async upgradeGameContract() {
+    console.log('\n🔓 Upgrading Game Contract...');
+    const result = await this.deployer.upgradeGameContract();
+    console.log('✅ Game Contract upgraded successfully!');
     console.log('Transaction Hash:', result.transaction_hash);
   }
 

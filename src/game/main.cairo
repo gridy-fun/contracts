@@ -160,7 +160,7 @@ pub mod GameContract {
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
 
-            if self.block_points_counter.read() == self.total_diamonds_and_bombs.read() {
+            if self.block_points_counter.read() >= self.total_diamonds_and_bombs.read() {
                 self.contract_enabled.write(true);
             } else {
                 panic!("Insufficient block points");
