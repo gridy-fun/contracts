@@ -57,6 +57,10 @@ pub mod GameContract {
         id_to_player: Map<felt252, ContractAddress>,
         player_to_points: Map<ContractAddress, felt252>,
         bot_to_player: Map<ContractAddress, ContractAddress>,
+        total_bots_player: Map<ContractAddress, felt252>, // No of bots deployed by a player
+        bots: Map<
+            (ContractAddress, felt252), ContractAddress,
+        >, // (Player, BotNo of player) to botAddress mapping
         played_till: felt252,
         game_currency: ERC20ABIDispatcher,
         #[substorage(v0)]
@@ -149,7 +153,7 @@ pub mod GameContract {
         self.bot_contract_class_hash.write(bot_contract_class_hash);
         self.total_diamonds_and_bombs.write(total_diamonds_and_bombs);
         self.block_points_counter.write(0);
-        
+
         self.boot_amount.write(boot_amount);
     }
 
@@ -171,6 +175,24 @@ pub mod GameContract {
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
             self.game_currency.write(ERC20ABIDispatcher { contract_address: currency });
+        }
+
+        fn get_game_currency(self: @ContractState) -> ContractAddress {
+            self.game_currency.read().contract_address
+        }
+
+        fn get_bot_to_player(self: @ContractState, bot: ContractAddress) -> ContractAddress {
+            self.bot_to_player.entry(bot).read()
+        }
+
+        fn get_total_bots_of_player(self: @ContractState, player: ContractAddress) -> felt252 {
+            self.total_bots_player.entry(player).read()
+        }
+
+        fn get_bot_of_player(
+            self: @ContractState, player: ContractAddress, index: felt252,
+        ) -> ContractAddress {
+            self.bots.entry((player, index)).read()
         }
 
         fn disable_contract(ref self: ContractState) {
@@ -212,7 +234,9 @@ pub mod GameContract {
             self
                 .game_currency
                 .read()
-                .transfer_from(player, get_contract_address(), self.boot_amount.read().into());
+                .transfer_from(
+                    get_caller_address(), get_contract_address(), self.boot_amount.read().into(),
+                );
 
             // deploy bot class hash
             let bot_contract_class_hash = self.bot_contract_class_hash.read();
@@ -350,6 +374,14 @@ pub mod GameContract {
             self.total_players.write(self.total_players.read() + 1);
             self.id_to_player.entry(self.total_players.read()).write(player);
             self.bot_to_player.entry(bot_address).write(player);
+            self
+                .total_bots_player
+                .entry(player)
+                .write(self.total_bots_player.entry(player).read() + 1);
+            self
+                .bots
+                .entry((player, self.total_bots_player.entry(player).read()))
+                .write(bot_address);
         }
     }
 

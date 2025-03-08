@@ -2,7 +2,7 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 pub trait IBotContract<TContractState> {
-    // admin functions 
+    // admin functions
     fn start_bot(ref self: TContractState);
     fn kill_bot(ref self: TContractState);
     fn update_owner(ref self: TContractState, new_executor: ContractAddress);

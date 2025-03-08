@@ -1,8 +1,8 @@
 #[starknet::contract]
-mod l2_registry {
+mod l3_registry {
     use openzeppelin::token::erc20::{ERC20ABIDispatcher, ERC20ABIDispatcherTrait};
-    use starknet::storage::{ StoragePointerReadAccess, StoragePointerWriteAccess};
-    use starknet::{ContractAddress, SyscallResultTrait, syscalls};
+    use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+    use starknet::{ContractAddress, syscalls};
 
     #[storage]
     struct Storage {
@@ -22,12 +22,16 @@ mod l2_registry {
         amount: u256,
         depositor: ContractAddress,
         message: Span<felt252>,
-    ) {
+    ) -> bool {
         let token = ERC20ABIDispatcher { contract_address: l3_token };
         token.approve(self.gridy_address.read(), amount);
         let deploy_bot_selector = selector!("deploy_bot");
 
-        syscalls::call_contract_syscall(self.gridy_address.read(), deploy_bot_selector, message)
-            .unwrap_syscall();
+        let res = syscalls::call_contract_syscall(
+            self.gridy_address.read(), deploy_bot_selector, message,
+        );
+
+        assert(res.is_ok(), 'Failed to deploy bot');
+        return true;
     }
 }

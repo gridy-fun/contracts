@@ -2,10 +2,16 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 pub trait IGameContract<TContractState> {
-    // admin functions 
+    // admin functions
     fn enable_contract(ref self: TContractState);
     fn disable_contract(ref self: TContractState);
     fn set_game_currency(ref self: TContractState, currency: ContractAddress);
+    fn get_game_currency(self: @TContractState) -> ContractAddress;
+    fn get_bot_to_player(self: @TContractState, bot: ContractAddress) -> ContractAddress;
+    fn get_total_bots_of_player(self: @TContractState, player: ContractAddress) -> felt252;
+    fn get_bot_of_player(
+        self: @TContractState, player: ContractAddress, index: felt252,
+    ) -> ContractAddress;
     fn update_executor_contract(ref self: TContractState, sequencer: ContractAddress);
     fn update_bomb_value(ref self: TContractState, bomb_value: u128);
     fn manage_bot_suspension(ref self: TContractState, bot: ContractAddress, suspend: bool);

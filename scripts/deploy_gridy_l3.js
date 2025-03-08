@@ -39,7 +39,7 @@ const CONFIG = {
     BOOT_AMOUNT: 10n * 10n ** 18n,
     CURRENCY: "0x137113c20ec598274978b10a3720ec692a13215f5980196641d2ca67c3fa9a8",
   },
-  ASSETS_PATH: "./scripts/assets",
+  ASSETS_PATH: "./target/dev/",
   CONTRACT_ADDRESSES: {
     GAME: "0x3316bcc1ff919bf8f2f14b980cfe625ce5d9176a23eab9819b26e22eb0e89f5",
     BRIDGE: "0x68a7cf80bd038300bc7455f8d12b07442a2b08694e173d26c48c77495e23fd4", // this is l2 bridge(on starknet sepolia) or TokenBridge_starknet_bridge
@@ -324,7 +324,7 @@ class StarknetDeployer {
       );
 
       const receipt = await this.l3_account.waitForTransaction(transaction_hash);
-      console.log("Diamonds slice ", i * CONFIG.MULTICALL_SIZE , "to ", (i + 1) * CONFIG.MULTICALL_SIZE, " updated! with transaction hash: ", receipt.transaction_hash);
+      console.log("Diamonds slice ", i * CONFIG.MULTICALL_SIZE, "to ", (i + 1) * CONFIG.MULTICALL_SIZE, " updated! with transaction hash: ", receipt.transaction_hash);
     }
 
     // call contract's update_block_points in a multicall set of  500 only bombs
@@ -381,6 +381,8 @@ class StarknetDeployer {
     );
     const receipt = await this.l3_account.waitForTransaction(declareAndDeployResponse.deploy.transaction_hash);
     console.log('Transaction Hash:', declareAndDeployResponse.deploy.transaction_hash);
+    console.log('Contract Address:', declareAndDeployResponse.deploy.contract_address);
+
     return receipt;
   }
 
@@ -392,6 +394,7 @@ class StarknetDeployer {
     });
     const receipt = await this.l2_account.waitForTransaction(declareAndDeployResponse.deploy.transaction_hash);
     console.log('Transaction Hash:', declareAndDeployResponse.deploy.transaction_hash);
+    console.log('Contract Address:', declareAndDeployResponse.deploy.contract_address);
     return receipt;
   }
 
@@ -423,7 +426,7 @@ class StarknetDeployer {
     const estimatedFee = await this.l3_account.estimateInvokeFee(upgradeCall);
     const { transaction_hash } = await this.l3_account.execute(
       upgradeCall,
-      { 
+      {
         maxFee: 0n
       }
     );
