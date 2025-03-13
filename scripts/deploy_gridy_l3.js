@@ -36,13 +36,14 @@ const CONFIG = {
     MINING_POINTS: 10,
     DIAMOND_VALUE: 5000,
     BOMB_VALUE: 666,
-    BOOT_AMOUNT: 10n * 10n ** 18n,
-    CURRENCY: "0x137113c20ec598274978b10a3720ec692a13215f5980196641d2ca67c3fa9a8",
+    BOOT_AMOUNT: 10n ** 15n,
+    CURRENCY: "0x2ddbc72f0e5cab98985923e1fd584ade101307ad06f48e3605f529717afddd2", // my game token l3 address
   },
   ASSETS_PATH: "./target/dev/",
   CONTRACT_ADDRESSES: {
     GAME: "0x3316bcc1ff919bf8f2f14b980cfe625ce5d9176a23eab9819b26e22eb0e89f5",
     BRIDGE: "0x68a7cf80bd038300bc7455f8d12b07442a2b08694e173d26c48c77495e23fd4", // this is l2 bridge(on starknet sepolia) or TokenBridge_starknet_bridge
+    L3_REGISTRY: "0x450208ff76cef4e025dc19806ecce5b203d035220be641ba06bb1bd3390ee1b",
     SPAWNERS: [
       "0x4b1858b51b856878890a229a5865daf98e4c1743a2c33de2f6b018f60ecc169",
       "0x228d6a466d4419d534b846852bcf11754dfc16f829b025ef42140bf111941e4",
@@ -205,13 +206,17 @@ class StarknetDeployer {
     this.l3_account = new Account(
       this.provider,
       CONFIG.EXECUTOR.ADDRESS,
-      CONFIG.EXECUTOR.PRIVATE_KEY
+      CONFIG.EXECUTOR.PRIVATE_KEY,
+      undefined,
+      "0x3"
     );
 
     this.l2_account = new Account(
       new RpcProvider({ nodeUrl: CONFIG.RPC.NODE_L2_URL }),
       CONFIG.L2_ACCOUNT.ADDRESS,
-      CONFIG.L2_ACCOUNT.PRIVATE_KEY
+      CONFIG.L2_ACCOUNT.PRIVATE_KEY,
+      undefined,
+      "0x3"
     );
 
     // Load contracts
@@ -390,7 +395,7 @@ class StarknetDeployer {
     const declareAndDeployResponse = await this.l2_account.declareAndDeploy({
       contract: this.contracts.l2Registry.sierra,
       casm: this.contracts.l2Registry.casm,
-      constructorCalldata: [CONFIG.CONTRACT_ADDRESSES.BRIDGE],
+      constructorCalldata: [CONFIG.CONTRACT_ADDRESSES.BRIDGE, CONFIG.CONTRACT_ADDRESSES.L3_REGISTRY],
     });
     const receipt = await this.l2_account.waitForTransaction(declareAndDeployResponse.deploy.transaction_hash);
     console.log('Transaction Hash:', declareAndDeployResponse.deploy.transaction_hash);
@@ -432,7 +437,9 @@ class StarknetDeployer {
     );
     const receipt = await this.l3_account.waitForTransaction(transaction_hash);
     return { transaction_hash, receipt };
+
   }
+
 
   async declareBotContract() {
     const declareResponse = await this.declareContract(this.contracts.bot);
@@ -706,6 +713,28 @@ class StarknetDeployer {
     const receipt = await this.l3_account.waitForTransaction(transaction_hash);
     return { transaction_hash, receipt };
   }
+
+  async updateBootAmount() {
+    const gameContract = new Contract(
+      this.contracts.game.sierra.abi,
+      CONFIG.CONTRACT_ADDRESSES.GAME,
+      this.provider
+    );
+
+    const updateBootAmountCall = gameContract.populate("update_boot_amount", [
+      10n ** 15n
+    ]);
+
+    const { transaction_hash } = await this.l3_account.execute(
+      setCurrencyCall,
+      {
+        maxFee: 0n
+      }
+    );
+
+    const receipt = await this.l3_account.waitForTransaction(transaction_hash);
+    return { transaction_hash, receipt };
+  }
 }
 
 
@@ -736,6 +765,7 @@ class DeploymentCLI {
     console.log('10. Exit');
     console.log('11. Set Game Currency');
     console.log('12. Upgrade Game Contract');
+    console.log('13. Update Boot amount');
 
     console.log('\nSelect an option (1-8):');
   }
@@ -793,6 +823,10 @@ class DeploymentCLI {
         case '12':
           await this.upgradeGameContract();
           break;
+        case '13':
+          await this.updateBootAmount();
+          break;
+
 
         default:
           console.log('\n❌ Invalid option. Please try again.');
@@ -862,6 +896,13 @@ class DeploymentCLI {
     console.log('\n🔓 Enabling Game Contract...');
     const result = await this.deployer.enableGameContract();
     console.log('✅ Game Contract enabled successfully!');
+    console.log('Transaction Hash:', result.transaction_hash);
+  }
+
+  async updateBootAmount() {
+    console.log('\n🔓 Updating Boot Amount...');
+    const result = await this.deployer.updateBootAmount();
+    console.log('✅ Boot Amount updated successfully!');
     console.log('Transaction Hash:', result.transaction_hash);
   }
 
