@@ -181,6 +181,13 @@ pub mod GameContract {
             self.game_currency.read().contract_address
         }
 
+        fn update_boot_amount(ref self: ContractState, amount: felt252) {
+            // This function can only be called by the owner
+            self.ownable.assert_only_owner();
+
+            self.boot_amount.write(amount);
+        }
+
         fn get_bot_to_player(self: @ContractState, bot: ContractAddress) -> ContractAddress {
             self.bot_to_player.entry(bot).read()
         }

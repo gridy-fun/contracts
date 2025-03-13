@@ -6,6 +6,7 @@ pub trait IGameContract<TContractState> {
     fn enable_contract(ref self: TContractState);
     fn disable_contract(ref self: TContractState);
     fn set_game_currency(ref self: TContractState, currency: ContractAddress);
+    fn update_boot_amount(ref self: TContractState, amount: felt252);
     fn get_game_currency(self: @TContractState) -> ContractAddress;
     fn get_bot_to_player(self: @TContractState, bot: ContractAddress) -> ContractAddress;
     fn get_total_bots_of_player(self: @TContractState, player: ContractAddress) -> felt252;
