@@ -42,12 +42,12 @@ mod l2_registry {
     }
 
     #[external(v0)]
-    fn get_bridge(ref self: ContractState) -> ContractAddress {
+    fn get_bridge(self: @ContractState) -> ContractAddress {
         return self.bridge.read();
     }
 
     #[external(v0)]
-    fn get_l3_registry(ref self: ContractState) -> ContractAddress {
+    fn get_l3_registry(self: @ContractState) -> ContractAddress {
         return self.l3Registry.read();
     }
 }
