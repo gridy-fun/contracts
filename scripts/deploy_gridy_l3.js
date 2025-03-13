@@ -41,7 +41,7 @@ const CONFIG = {
   },
   ASSETS_PATH: "./target/dev/",
   CONTRACT_ADDRESSES: {
-    GAME: "0x3316bcc1ff919bf8f2f14b980cfe625ce5d9176a23eab9819b26e22eb0e89f5",
+    GAME: "",
     BRIDGE: "0x68a7cf80bd038300bc7455f8d12b07442a2b08694e173d26c48c77495e23fd4", // this is l2 bridge(on starknet sepolia) or TokenBridge_starknet_bridge
     L3_REGISTRY: "0x450208ff76cef4e025dc19806ecce5b203d035220be641ba06bb1bd3390ee1b",
     SPAWNERS: [
@@ -749,92 +749,90 @@ class DeploymentCLI {
 
   async showMenu() {
     console.log('\n🚀 Starknet Deployment Menu\n');
-    console.log('-3. Declare and Deploy L2 Registry Contract');
-    console.log('-2. Declare and Deploy L3 Registry Contract');
-    console.log('-1. Declare and Deploy Game Contract');
-    console.log('0. Declare Game Contract');
-    console.log('1. Deploy Game Contract');
-    console.log('2. Add Block Points to Game Contract');
-    console.log('3. Enable Game Contract');
-    console.log('4. Declare Bot Contract');
-    console.log('5. Deploy Multiple Bots');
-    console.log('6. Call Mine');
-    console.log('7. Get Class Hash');
-    console.log('8. Disable Game Contract');
-    console.log("9. Check is bot alive")
-    console.log('10. Exit');
-    console.log('11. Set Game Currency');
-    console.log('12. Upgrade Game Contract');
-    console.log('13. Update Boot amount');
-
-    console.log('\nSelect an option (1-8):');
+    console.log('1. Declare and Deploy L2 Registry Contract');
+    console.log('2. Declare and Deploy L3 Registry Contract');
+    console.log('3. Declare and Deploy Game Contract');
+    console.log('4. Declare Game Contract');
+    console.log('5. Deploy Game Contract');
+    console.log('6. Add Block Points to Game Contract');
+    console.log('7. Enable Game Contract');
+    console.log('8. Declare Bot Contract');
+    console.log('9. Deploy Multiple Bots');
+    console.log('10. Call Mine');
+    console.log('11. Get Class Hash');
+    console.log('12. Disable Game Contract');
+    console.log('13. Check is bot alive');
+    console.log('14. Set Game Currency');
+    console.log('15. Upgrade Game Contract');
+    console.log('16. Update Boot amount');
+    console.log('17. Exit');
+  
+    console.log('\nSelect an option (1-17):');
   }
 
   async handleUserInput(input) {
     try {
       switch (input) {
-        case '-3':
+        case '1':
           await this.declareAndDeployL2RegistryContract();
           break;
-        case '-2':
+        case '2':
           await this.declareAndDeployL3RegistryContract();
           break;
-        case '-1':
+        case '3':
           await this.declareAndDeployGameContract();
           break;
-        case '0':
+        case '4':
           await this.declareGame();
           break;
-        case '1':
+        case '5':
           await this.deployGame();
           break;
-        case '2':
+        case '6':
           await this.updateBlockPoints();
           break;
-        case '3':
+        case '7':
           await this.enableGame();
           break;
-        case '4':
+        case '8':
           await this.declareBot();
           break;
-        case '5':
+        case '9':
           await this.deployMultipleBots();
           break;
-        case '6':
+        case '10':
           await this.callMine();
           break;
-        case '7':
+        case '11':
           await this.getClassHash();
           break;
-        case '8':
+        case '12':
           await this.disableGame();
           break;
-        case '9':
+        case '13':
           await this.callIsBotAlive();
           break;
-        case '10':
+        case '14':
+          await this.setGameCurrency();
+          break;
+        case '15':
+          await this.upgradeGameContract();
+          break;
+        case '16':
+          await this.updateBootAmount();
+          break;
+        case '17':
           console.log('\nExiting...');
           this.rl.close();
           process.exit(0);
           break;
-        case '11':
-          await this.setGameCurrency();
-          break;
-        case '12':
-          await this.upgradeGameContract();
-          break;
-        case '13':
-          await this.updateBootAmount();
-          break;
-
-
         default:
           console.log('\n❌ Invalid option. Please try again.');
       }
     } catch (error) {
       console.error('\n❌ Operation failed:', error);
     }
-
+  
     await this.continuePrompt();
   }
 
