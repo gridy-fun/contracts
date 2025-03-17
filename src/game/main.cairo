@@ -41,7 +41,7 @@ pub mod GameContract {
         // address of executor contract
         sequencer: ContractAddress,
         //mined tiles map
-        mined_tiles: Map<felt252, bool>,
+        // mined_tiles: Map<felt252, bool>,
         // total count of diamonds and bombs
         total_diamonds_and_bombs: u128,
         // counter for block point locations
@@ -336,7 +336,7 @@ pub mod GameContract {
             }
 
             // mine the tile
-            self.mined_tiles.entry(new_mine).write(true);
+            // self.mined_tiles.entry(new_mine).write(true);
 
             self
                 .emit(
@@ -369,7 +369,8 @@ pub mod GameContract {
         }
 
         fn check_if_already_mined(self: @ContractState, block_id: felt252) -> bool {
-            self.mined_tiles.entry(block_id).read()
+            // self.mined_tiles.entry(block_id).read()
+            false
         }
     }
 
