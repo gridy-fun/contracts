@@ -40,7 +40,7 @@ pub mod GameContract {
         mining_points: u128,
         // address of executor contract
         sequencer: ContractAddress,
-        //mined tiles map
+        // mined tiles map
         mined_tiles: Map<felt252, bool>,
         // total count of diamonds and bombs
         total_diamonds_and_bombs: u128,
@@ -317,6 +317,8 @@ pub mod GameContract {
             // check if location contains a diamond
             if block_points != 0 && block_points != bomb_value {
                 let player = self.bot_to_player.entry(bot).read();
+                // mine the tile
+                self.mined_tiles.entry(new_mine).write(true);
                 self
                     .player_to_points
                     .entry(bot)
@@ -332,11 +334,10 @@ pub mod GameContract {
             } // check if location contains a bomb
             else if block_points == bomb_value {
                 bot_contract.kill_bot();
+                self.mined_tiles.entry(new_mine).write(true);
                 self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
             }
 
-            // mine the tile
-            self.mined_tiles.entry(new_mine).write(true);
 
             self
                 .emit(
