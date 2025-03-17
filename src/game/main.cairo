@@ -291,7 +291,7 @@ pub mod GameContract{
 
         fn check_if_already_mined(self: @ContractState, block_id: felt252) -> bool {
             // self.mined_tiles.entry(block_id).read()
-            true
+            false
         }
     }
 
