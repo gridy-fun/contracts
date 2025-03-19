@@ -9,7 +9,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // Configuration constants
 const CONFIG = {
   RPC: {
-    NODE_L3_URL: "http://localhost:9944",
+    NODE_L3_URL: "https://madara-l2-l3.karnot.xyz/",
     NODE_L2_URL: "https://starknet-sepolia.g.alchemy.com/v2/gbyYKt74AtTbRcgTSFP45xXuFUFdTH3D"
   },
   DEPLOYMENT_PER_SPAWNER: 1,
@@ -37,11 +37,11 @@ const CONFIG = {
     DIAMOND_VALUE: 5000,
     BOMB_VALUE: 666,
     BOOT_AMOUNT: 10n ** 15n,
-    CURRENCY: "0x2ddbc72f0e5cab98985923e1fd584ade101307ad06f48e3605f529717afddd2", // my game token l3 address
+    CURRENCY: "0x03821bdc7aaa3c501cc6bba524ecfe79937692b74417bb6f996593c6b065cbe1", // my game token l3 address
   },
   ASSETS_PATH: "./target/dev/",
   CONTRACT_ADDRESSES: {
-    GAME: "",
+    GAME: "0x268aef2695bb30971776719d3d8b1ba68e0ca0d40ea3008263c0422d7273e80",
     BRIDGE: "0x68a7cf80bd038300bc7455f8d12b07442a2b08694e173d26c48c77495e23fd4", // this is l2 bridge(on starknet sepolia) or TokenBridge_starknet_bridge
     L3_REGISTRY: "0x450208ff76cef4e025dc19806ecce5b203d035220be641ba06bb1bd3390ee1b",
     SPAWNERS: [
@@ -766,7 +766,7 @@ class DeploymentCLI {
     console.log('15. Upgrade Game Contract');
     console.log('16. Update Boot amount');
     console.log('17. Exit');
-  
+
     console.log('\nSelect an option (1-17):');
   }
 
@@ -832,7 +832,7 @@ class DeploymentCLI {
     } catch (error) {
       console.error('\n❌ Operation failed:', error);
     }
-  
+
     await this.continuePrompt();
   }
 
