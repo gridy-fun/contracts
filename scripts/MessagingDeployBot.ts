@@ -348,14 +348,14 @@ async function getGameState(acc_l3: Account) {
   const cls = await acc_l3.getClassAt(game);
   const gameContract = new Contract(cls.abi, game, acc_l3);
 
-  const call = await gameContract.call('get_total_bots_of_player', [
+  const total_bots = await gameContract.call('get_total_bots_of_player', [
     process.env.ACCOUNT_L1_ADDRESS as string
   ])
-  console.log("Total bots of player: ", call);
+  console.log("Total bots of player: ", total_bots);
 
   const botAddress = await gameContract.call('get_bot_of_player', [
     process.env.ACCOUNT_L2_ADDRESS as string,
-    2
+    total_bots
   ]);
 
   console.log("Bot address: ", num.toHex(botAddress as string));
@@ -397,7 +397,7 @@ async function main() {
 
   // not working sepolia txns go through
   // depositL2toL3(acc_l2);
-  // declareAndUpgradeGameContract(acc_l3);
+  declareAndUpgradeGameContract(acc_l3);
   // // depositWithMessageL2toL3(acc_l2);
   // depositWithMessageL1toL3(acc_l1);
 
