@@ -1,0 +1,20 @@
+{
+  "contracts": {
+    "ERC20_starknet_bridge": "0xc811e776b41e5bb5e80e992d64c4ac1eb52c5a16c32d1882b1341b9344186c",
+    "appchain_starknet_bridge": "0x60ee7746b6ae0aea09b0924482f1740c192d66b9952519b36eca21e99b3dcf1",
+    "TokenBridge_starknet_bridge": "0x00422dd5fe05931e677c0dcbb74ea057874ba4035c5d5784ea626200b7cfc702",
+    "TokenBridge_starkgate_contracts": "0x8ff0d8c01af0b9e5ab904f0299e6ae3a94b28c680b821ab02b978447d2da67",
+    "L1TokenBridge": "0xF6217de888fD6E6b2CbFBB2370973BE4c36a152D",
+    "L3Registry": "0x4407329ceb7c8ba43f74e9f89d84a7c44ec46835bbc5337aa82f0aa41ae1368",
+    "L2Registry": "0x23f6fd19e1d2688818c1e097e7365c7f5c6afd272b42c08f89e7f9580497467",
+    "GameContract_gridy": "0x61dabf5527d64169587abaf0aaf489dd49e542defed2ee962e6c96fb6b64618",
+    "MyL1GameToken": "0x2196d41378b9332682aAB47C5e5aE342b4429060",
+    "MyL2GameToken": "0x03821bdc7aaa3c501cc6bba524ecfe79937692b74417bb6f996593c6b065cbe1",
+    "MyL3GameToken": "0x6cc00fdc4aafe92b1e8500fddbc731979c1f1a29bb8c5dac14fd27bd7d8b245",
+    "L1StrkToken": "0xCa14007Eff0dB1f8135f4C25B34De49AB0d42766",
+    "L2StrkToken": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d"
+  },
+  "class_hashes": {
+    "GameContract_gridy": "0x5209c9f69dd6fa4f61f9422bf52e5b97c4d1d3417edbc9407450469dfd27213"
+  }
+}

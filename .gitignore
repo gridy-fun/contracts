@@ -1,4 +1,5 @@
 target
 .snfoundry_cache
 node_modules/
-scripts/assets/   
+scripts/assets/ 
+.env  

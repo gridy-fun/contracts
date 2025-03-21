@@ -6,7 +6,7 @@ import {
   Account, Contract, num
 } from 'starknet';
 
-import { parseAbi, parseEther, WalletClient } from "viem";
+import { maxInt232, parseAbi, parseEther, WalletClient } from "viem";
 import { sepolia } from "viem/chains";
 import { Account as EthAccount } from "viem";
 
@@ -90,6 +90,33 @@ async function declareAndUpgradeL2Bridge(acc_l2: Account) {
 }
 
 
+async function declareAndUpgradeGameContract(acc_l3: Account) {
+  await declareContract("GameContract", "gridy", Layer.L3);
+  console.log("GameContract_gridy declared !!");
+  await sleep(1000);
+  const game = getContracts().contracts["GameContract_gridy"];
+  const cls = await acc_l3.getClassAt(game);
+  let gameContract = new Contract(cls.abi, game, acc_l3);
+  const upgradeCall = gameContract.populate('upgrade', {
+    new_class_hash: getContracts().class_hashes["GameContract_gridy"]
+  });
+  let result = await acc_l3.execute([upgradeCall], {
+    maxFee: 0,
+    resourceBounds: {
+      l1_gas: {
+        max_amount: "0x0",
+        max_price_per_unit: "0x0"
+      },
+      l2_gas: {
+        max_amount: "0x0",
+        max_price_per_unit: "0x0"
+      }
+    }
+  });
+  console.log("Upgrade success !!", result);
+}
+
+
 async function declareAndUpgradeL3Bridge(acc_l3: Account) {
   await declareContract("TokenBridge", "starkgate_contracts", Layer.L3);
   console.log("TokenBridge declared !!");
@@ -110,8 +137,8 @@ async function declareAndUpgradeL3Bridge(acc_l3: Account) {
 }
 
 async function depositWithMessageL1toL3(acc_l1: WalletClient, token: string = "MyL1GameToken") {
-  const l1GameToken = "0x2196d41378b9332682aAB47C5e5aE342b4429060";
-  const tokenBridge = "0xF6217de888fD6E6b2CbFBB2370973BE4c36a152D";
+  const l1GameToken = getContracts().contracts[token];
+  const tokenBridge = getContracts().contracts["L1TokenBridge"];
 
 
   // Approval
@@ -137,18 +164,12 @@ async function depositWithMessageL1toL3(acc_l1: WalletClient, token: string = "M
 
   // Deposit
   {
-    // const l2Registry = getContracts().contracts["L2Registry"];
-    // const l2GameToken = getContracts().contracts["MyL2GameToken"];
-    // const l3Registry = getContracts().contracts["L3Registry"];
-    // const player = process.env.ACCOUNT_L2_ADDRESS as string;
+    const l2Registry = getContracts().contracts["L2Registry"];
+    const player = process.env.ACCOUNT_L1_ADDRESS as string;
     //
-    // const depositWithMessageAbi = parseAbi([
-    //   'function depositWithMessage(address token, uint256 amount, uint256 l2Recipient, uint256[] memory message) external payable',
-    // ]);
-
-    // const depositWithMessageAbi = parseAbi([
-    //   'function depositWithMessage(address token, uint256 amount, uint256 l2Recipient, uint256[] memory message) external payable',
-    // ]);
+    const depositWithMessageAbi = parseAbi([
+      'function depositWithMessage(address token, uint256 amount, uint256 l2Recipient, uint256[] memory message) external payable',
+    ]);
     // function depositWithMessage(
     //   address token,
     //   uint256 amount,
@@ -157,23 +178,66 @@ async function depositWithMessageL1toL3(acc_l1: WalletClient, token: string = "M
     // ) external payable onlyServicingToken(token)
 
 
-    // const depositWithMessasgeTx = await acc_l1.writeContract({
-    //   address: tokenBridge,
-    //   abi: depositWithMessageAbi,
-    //   functionName: 'depositWithMessage',
-    //   args: [
-    //     l1GameToken,  // l1 token
-    //     10n ** 15n,   // amount
-    //     l2Registry,   // l2Recipient
-    //     [
-    //       BigInt(player),
-    //       15n
-    //     ]
-    //   ],
-    //   value: parseEther('0.01'),
-    //   account: acc_l1.account as EthAccount,
-    //   chain: sepolia,
-    // });
+    const depositWithMessasgeTx = await acc_l1.writeContract({
+      address: tokenBridge,
+      abi: depositWithMessageAbi,
+      functionName: 'depositWithMessage',
+      args: [
+        l1GameToken,  // l1 token
+        10n ** 15n,   // amount
+        l2Registry,   // l2Recipient
+        [
+          BigInt(player),
+          185n
+        ]
+      ],
+      value: parseEther('0.001'),
+      account: acc_l1.account as EthAccount,
+      chain: sepolia,
+    });
+
+    console.log("Deposit transaction hash:", depositWithMessasgeTx);
+
+  }
+}
+
+async function depositL1toL2(acc_l1: WalletClient) {
+  const l1GameToken = getContracts().contracts["MyL1GameToken"];
+  const tokenBridge = getContracts().contracts["L1TokenBridge"];
+
+
+  // Approval
+  {
+
+    const tokenAbi = parseAbi([
+      'function approve(address spender, uint256 amount) returns (bool)',
+    ])
+
+    const approveTx = await acc_l1.writeContract({
+      address: l1GameToken,
+      abi: tokenAbi,
+      functionName: 'approve',
+      args: [tokenBridge, 20n * 10n ** 21n],
+      chain: sepolia,
+      account: acc_l1.account as EthAccount
+    });
+
+    console.log('Approval transaction hash:', approveTx);
+    await sleep(3000);
+  }
+
+
+  // Deposit
+  {
+    let acc_l2 = getAccount(Layer.L2);
+
+
+    // function deposit(
+    //     address token,
+    //     uint256 amount,
+    //     uint256 l2Recipient
+    // ) external payable onlyServicingToken(token) {
+
 
     const depositAbi = parseAbi([
       "function deposit(address token, uint256 amount, uint256 l2Recipient) external payable",
@@ -183,7 +247,7 @@ async function depositWithMessageL1toL3(acc_l1: WalletClient, token: string = "M
       address: tokenBridge,
       abi: depositAbi,
       functionName: "deposit",
-      args: [l1GameToken, 1n ** 15n, BigInt("0x0463A5a7D814c754E6C3c10f9De8024B2bdF20eb56aD5168076636A858402D7e")],
+      args: [l1GameToken, 20n * 10n ** 21n, BigInt(acc_l2.address)],
       value: parseEther("0.01"),
       account: acc_l1.account as EthAccount, // Removed TypeScript casting
       chain: sepolia,
@@ -196,7 +260,7 @@ async function depositWithMessageL1toL3(acc_l1: WalletClient, token: string = "M
 
 
 async function depositWithMessageL2toL3(acc_l2: Account) {
-  const gridTokenAddress = getContracts().contracts["ERC20_starknet_bridge"];
+  const gridTokenAddress = getContracts().contracts["MyL2GameToken"];
   const tokenBridge = getContracts().contracts["TokenBridge_starknet_bridge"];
 
 
@@ -208,7 +272,7 @@ async function depositWithMessageL2toL3(acc_l2: Account) {
 
     const call = gridToken.populate('approve', {
       spender: tokenBridge,
-      amount: 12n * 10n ** 18n
+      amount: 10n * 10n ** 18n
     });
     let result = await acc_l2.execute([call]);
     console.log("Approval success !!", result);
@@ -225,11 +289,11 @@ async function depositWithMessageL2toL3(acc_l2: Account) {
 
     const call = tokenBridgeContract.populate('deposit_with_message', {
       token: gridTokenAddress,
-      amount: 11n * 10n ** 18n,
+      amount: 10n * 10n ** 18n,
       appchain_recipient: l3Registry,
       message: [
         process.env.ACCOUNT_L2_ADDRESS as string, // Player in game
-        4n // Initial location to mine
+        85n // Initial location to mine
       ]
     });
     let result = await acc_l2.execute([call]);
@@ -238,13 +302,54 @@ async function depositWithMessageL2toL3(acc_l2: Account) {
   }
 }
 
+
+async function depositL2toL3(acc_l2: Account) {
+  const tokenAddress = getContracts().contracts["MyL2GameToken"];
+  const tokenBridge = getContracts().contracts["TokenBridge_starknet_bridge"];
+
+
+
+  // Approval
+  {
+    const tokenCls = await acc_l2.getClassAt(tokenAddress);
+    const token = new Contract(tokenCls.abi, tokenAddress, acc_l2);
+
+    const call = token.populate('approve', {
+      spender: tokenBridge,
+      amount: 10n * 10n ** 18n
+    });
+    let result = await acc_l2.execute([call]);
+    console.log("Approval success !!", result);
+  }
+  await sleep(4000);
+
+
+
+  // Deposit
+  {
+    const Bridgecls = await acc_l2.getClassAt(tokenBridge);
+    const tokenBridgeContract = new Contract(Bridgecls.abi, tokenBridge, acc_l2);
+
+    const call = tokenBridgeContract.populate('deposit', {
+      token: tokenAddress,
+      amount: 10n * 10n ** 18n,
+      appchain_recipient: process.env.ACCOUNT_L3_ADDRESS as string,
+      message: 0
+    });
+    let result = await acc_l2.execute([call]);
+    console.log("Deposit success !!", result);
+    await sleep(10000);
+  }
+}
+
 async function getGameState(acc_l3: Account) {
-  const game = getContracts().contracts["Game"];
+  const game = getContracts().contracts["GameContract_gridy"];
+  console.log("Game contract: ", game);
   const cls = await acc_l3.getClassAt(game);
   const gameContract = new Contract(cls.abi, game, acc_l3);
 
   const call = await gameContract.call('get_total_bots_of_player', [
-    process.env.ACCOUNT_L2_ADDRESS as string
+    process.env.ACCOUNT_L1_ADDRESS as string
   ])
   console.log("Total bots of player: ", call);
 
@@ -256,9 +361,50 @@ async function getGameState(acc_l3: Account) {
   console.log("Bot address: ", num.toHex(botAddress as string));
 }
 
-function main() {
+
+async function deployGameContract(acc_l2: Account) {
+  await declareContract("GameContract", "gridy", Layer.L2);
+  console.log("Game core contract declared successfully !!");
+  const class_hash = await getContracts().class_hashes["GameContract_gridy"];
+  await sleep(2000);
+  const contract = await deployContract("GameContract_gridy", class_hash, [
+    acc_l2.address, // executor 
+    0,
+    0, // state_root,
+    0, // block_number,
+    0, // block_hash
+    0,
+    0,
+    0,
+    0
+  ], Layer.L2);
+
+  await sleep(2000);
+  console.log("Game  contract deployed successfully at: ", contract.address);
+}
+
+// Make amount as param for how much to bridge
+// Do a check of balance on the amount to bridge
+// Fail early if not enough balance
+async function main() {
   let acc_l1 = getEthereumClient();
-  depositWithMessageL1toL3(acc_l1, "MyL1GameToken");
+  let acc_l2 = getAccount(Layer.L2);
+  let acc_l3 = getAccount(Layer.L3);
+
+
+  // working
+  // depositL1toL2(acc_l1);
+
+  // not working sepolia txns go through
+  // depositL2toL3(acc_l2);
+  // declareAndUpgradeGameContract(acc_l3);
+  // // depositWithMessageL2toL3(acc_l2);
+  // depositWithMessageL1toL3(acc_l1);
+
+  // await getGameState(acc_l3);
+  // await declareContract("gameContract", "gridy", Layer.L2);
+
+  // await deployGameContract(acc_l2);
 }
 
 main();

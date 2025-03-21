@@ -25,4 +25,5 @@ pub trait IGameContract<TContractState> {
     // view functions
     fn is_contract_enabled(self: @TContractState) -> bool;
     fn check_if_already_mined(self: @TContractState, block_id: felt252) -> bool;
+    fn get_bot_deployment_salt(self: @TContractState) -> felt252;
 }

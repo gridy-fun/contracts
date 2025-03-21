@@ -28,6 +28,7 @@ pub mod GameContract {
 
     #[storage]
     struct Storage {
+        bot_deployment_salt: felt252,
         // Flag to enable/disable the contract
         contract_enabled: bool,
         // bot contract class hash
@@ -255,9 +256,10 @@ pub mod GameContract {
             location.serialize(ref bot_contract_constructor_args);
             self.grid_width.read().serialize(ref bot_contract_constructor_args);
             self.grid_height.read().serialize(ref bot_contract_constructor_args);
+            self.bot_deployment_salt.write(self.bot_deployment_salt.read() + 1);
             let (deployed_address, _) = deploy_syscall(
                 bot_contract_class_hash.try_into().unwrap(),
-                0,
+                self.bot_deployment_salt.read(),
                 bot_contract_constructor_args.span(),
                 true,
             )
@@ -370,6 +372,10 @@ pub mod GameContract {
 
         fn check_if_already_mined(self: @ContractState, block_id: felt252) -> bool {
             self.mined_tiles.entry(block_id).read()
+        }
+
+        fn get_bot_deployment_salt(self: @ContractState) -> felt252 {
+            self.bot_deployment_salt.read()
         }
     }
 

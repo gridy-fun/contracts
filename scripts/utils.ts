@@ -113,9 +113,25 @@ export async function declareContract(contract_name: string, package_name: strin
 
     let tx: { transaction_hash: string; class_hash: string; };
     if (layer === Layer.L3) {
+      console.log("Declaring on L3");
+      tx = await acc.declareIfNot(payload, {
+        maxFee: 0,
+        resourceBounds: {
+          l1_gas: {
+            max_amount: "0x0",
+            max_price_per_unit: "0x0"
+          },
+          l2_gas: {
+            max_amount: "0x0",
+            max_price_per_unit: "0x0"
+          }
+        }
+      });
+    } else if (layer === Layer.L2) {
+      console.log("Declaring on L2");
       tx = await acc.declareIfNot(payload, { maxFee: 0 });
     } else {
-      tx = await acc.declareIfNot(payload);
+      throw new Error('Invalid layer');
     }
     await provider.waitForTransaction(tx.transaction_hash, {
       successStates: [TransactionFinalityStatus.ACCEPTED_ON_L2]
