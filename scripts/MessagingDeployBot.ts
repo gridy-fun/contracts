@@ -349,12 +349,14 @@ async function getGameState(acc_l3: Account) {
   const gameContract = new Contract(cls.abi, game, acc_l3);
 
   const total_bots = await gameContract.call('get_total_bots_of_player', [
-    process.env.ACCOUNT_L1_ADDRESS as string
+    "0x04dD8B921A8639f808e4eF949bcaf94510dC96d1",
+    // process.env.ACCOUNT_L1_ADDRESS as string
   ])
   console.log("Total bots of player: ", total_bots);
 
   const botAddress = await gameContract.call('get_bot_of_player', [
-    process.env.ACCOUNT_L2_ADDRESS as string,
+    // process.env.ACCOUNT_L1_ADDRESS as string
+    "0x04dD8B921A8639f808e4eF949bcaf94510dC96d1",
     total_bots
   ]);
 
@@ -383,6 +385,22 @@ async function deployGameContract(acc_l2: Account) {
   console.log("Game  contract deployed successfully at: ", contract.address);
 }
 
+
+async function initiateTokenWithdrawal(acc_l3: Account, amount: BigInt) {
+  let tokenBridge_l3 = getContracts().contracts["TokenBridge_starkgate_contracts"];
+  let cls = await acc_l3.getClassAt(tokenBridge_l3);
+  let tokenBridgeContract_l3 = new Contract(cls.abi, tokenBridge_l3, acc_l3);
+
+  const initiateWithdrawalCall = tokenBridgeContract_l3.populate('initiate_token_withdraw', {
+    l1_token: getContracts().contracts["MyL2GameToken"],
+    l1_recipient: process.env.ACCOUNT_L2_ADDRESS as string,
+    amount,
+  });
+
+  let tx = await acc_l3.execute([initiateWithdrawalCall]);
+  console.log("Withdrawal initiated: ", tx.transaction_hash);
+}
+
 // Make amount as param for how much to bridge
 // Do a check of balance on the amount to bridge
 // Fail early if not enough balance
@@ -392,14 +410,13 @@ async function main() {
   let acc_l3 = getAccount(Layer.L3);
 
 
-  // working
-  // depositL1toL2(acc_l1);
+  // await depositL1toL2(acc_l1);
+  await initiateTokenWithdrawal(acc_l3, 10n * 10n ** 15n);
 
-  // not working sepolia txns go through
-  // depositL2toL3(acc_l2);
-  declareAndUpgradeGameContract(acc_l3);
-  // // depositWithMessageL2toL3(acc_l2);
-  // depositWithMessageL1toL3(acc_l1);
+  // await depositL2toL3(acc_l2);
+  // await declareAndUpgradeGameContract(acc_l3);
+  // await depositWithMessageL2toL3(acc_l2);
+  // await depositWithMessageL1toL3(acc_l1);
 
   // await getGameState(acc_l3);
   // await declareContract("gameContract", "gridy", Layer.L2);

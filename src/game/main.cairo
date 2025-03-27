@@ -41,6 +41,7 @@ pub mod GameContract {
         mining_points: u128,
         // address of executor contract
         sequencer: ContractAddress,
+        total_diamonds_mined: felt252,
         // mined tiles map
         mined_tiles: Map<felt252, bool>,
         // total count of diamonds and bombs
@@ -325,6 +326,7 @@ pub mod GameContract {
                     .player_to_points
                     .entry(bot)
                     .write(self.player_to_points.entry(player).read() + block_points.into());
+                self.total_diamonds_mined.write(self.total_diamonds_mined.read() + 1);
                 self
                     .emit(
                         Event::DiamondFound(
@@ -339,7 +341,6 @@ pub mod GameContract {
                 self.mined_tiles.entry(new_mine).write(true);
                 self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
             }
-
 
             self
                 .emit(
@@ -377,6 +378,11 @@ pub mod GameContract {
 
         fn get_bot_deployment_salt(self: @ContractState) -> felt252 {
             self.bot_deployment_salt.read()
+        }
+
+
+        fn get_total_diamonds_mined(self: @ContractState) -> felt252 {
+            self.total_diamonds_mined.read()
         }
     }
 
