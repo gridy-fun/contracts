@@ -349,14 +349,12 @@ async function getGameState(acc_l3: Account) {
   const gameContract = new Contract(cls.abi, game, acc_l3);
 
   const total_bots = await gameContract.call('get_total_bots_of_player', [
-    "0x04dD8B921A8639f808e4eF949bcaf94510dC96d1",
-    // process.env.ACCOUNT_L1_ADDRESS as string
+    process.env.ACCOUNT_L1_ADDRESS as string
   ])
   console.log("Total bots of player: ", total_bots);
 
   const botAddress = await gameContract.call('get_bot_of_player', [
-    // process.env.ACCOUNT_L1_ADDRESS as string
-    "0x04dD8B921A8639f808e4eF949bcaf94510dC96d1",
+    process.env.ACCOUNT_L1_ADDRESS as string,
     total_bots
   ]);
 
@@ -411,14 +409,14 @@ async function main() {
 
 
   // await depositL1toL2(acc_l1);
-  await initiateTokenWithdrawal(acc_l3, 10n * 10n ** 15n);
+  // await initiateTokenWithdrawal(acc_l3, 10n * 10n ** 15n);
 
   // await depositL2toL3(acc_l2);
   // await declareAndUpgradeGameContract(acc_l3);
   // await depositWithMessageL2toL3(acc_l2);
   // await depositWithMessageL1toL3(acc_l1);
 
-  // await getGameState(acc_l3);
+  await getGameState(acc_l3);
   // await declareContract("gameContract", "gridy", Layer.L2);
 
   // await deployGameContract(acc_l2);
