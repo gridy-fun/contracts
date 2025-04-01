@@ -62,6 +62,12 @@ mod l3_registry {
         return true;
     }
 
+    #[external(v0)]
+    fn set_gridy_address(ref self: ContractState, gridy_address: ContractAddress) {
+        self.ownable.assert_only_owner();
+        self.gridy_address.write(gridy_address);
+    }
+
 
     #[abi(embed_v0)]
     impl UpgradeableImpl of IUpgradeable<ContractState> {
