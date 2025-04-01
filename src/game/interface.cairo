@@ -17,6 +17,8 @@ pub trait IGameContract<TContractState> {
     fn update_bomb_value(ref self: TContractState, bomb_value: u128);
     fn manage_bot_suspension(ref self: TContractState, bot: ContractAddress, suspend: bool);
     fn update_block_points(ref self: TContractState, block_id: felt252, points: u128);
+    fn set_appchain_bridge(ref self: TContractState, bridge: ContractAddress);
+    fn withdraw_game_currency(ref self: TContractState, amount: u128, recipient: ContractAddress);
 
     // game functions
     fn deploy_bot(ref self: TContractState, player: ContractAddress, location: felt252);
@@ -27,4 +29,5 @@ pub trait IGameContract<TContractState> {
     fn check_if_already_mined(self: @TContractState, block_id: felt252) -> bool;
     fn get_bot_deployment_salt(self: @TContractState) -> felt252;
     fn get_total_diamonds_mined(self: @TContractState) -> felt252;
+    fn get_appchain_bridge(self: @TContractState) -> ContractAddress;
 }

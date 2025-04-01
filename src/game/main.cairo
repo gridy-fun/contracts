@@ -1,3 +1,22 @@
+use starknet::ContractAddress;
+
+#[starknet::interface]
+trait ITokenBridge<TContractState> {
+    fn get_version(self: @TContractState) -> felt252;
+    fn get_identity(self: @TContractState) -> felt252;
+    fn get_l1_token(self: @TContractState, l2_token: ContractAddress) -> ContractAddress;
+    fn get_l1_bridge(self: @TContractState) -> ContractAddress;
+    fn get_l2_token(self: @TContractState, l1_token: ContractAddress) -> ContractAddress;
+    fn get_remaining_withdrawal_quota(self: @TContractState, l1_token: ContractAddress) -> u256;
+    fn initiate_withdraw(ref self: TContractState, l1_recipient: ContractAddress, amount: u256);
+    fn initiate_token_withdraw(
+        ref self: TContractState,
+        l1_token: ContractAddress,
+        l1_recipient: ContractAddress,
+        amount: u256,
+    );
+}
+
 #[starknet::contract]
 pub mod GameContract {
     use gridy::bot::interface::{IBotContractDispatcher, IBotContractDispatcherTrait};
@@ -14,6 +33,8 @@ pub mod GameContract {
     use starknet::{
         ClassHash, ContractAddress, SyscallResultTrait, get_caller_address, get_contract_address,
     };
+
+    use super::{ ITokenBridgeDispatcher, ITokenBridgeDispatcherTrait };
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
@@ -53,6 +74,7 @@ pub mod GameContract {
         grid_height: u128,
         // starting amount to play the game
         boot_amount: felt252,
+        appchain_bridge: ContractAddress,
         // Total points awarded yet
         total_points: felt252,
         total_players: felt252,
@@ -177,6 +199,23 @@ pub mod GameContract {
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
             self.game_currency.write(ERC20ABIDispatcher { contract_address: currency });
+        }
+
+        fn set_appchain_bridge(ref self: ContractState, bridge: ContractAddress) {
+            // This function can only be called by the owner
+            self.ownable.assert_only_owner();
+            self.appchain_bridge.write(bridge);
+        }
+
+        fn withdraw_game_currency(ref self: ContractState, amount: u128, recipient: ContractAddress) {
+            // This function can only be called by the owner
+            self.ownable.assert_only_owner();
+            let token_bridge = ITokenBridgeDispatcher { contract_address: self.appchain_bridge.read() };
+            token_bridge.initiate_withdraw(recipient, amount.into());
+        }
+
+        fn get_appchain_bridge(self: @ContractState) -> ContractAddress {
+            self.appchain_bridge.read()
         }
 
         fn get_game_currency(self: @ContractState) -> ContractAddress {
