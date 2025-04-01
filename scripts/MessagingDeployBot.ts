@@ -416,7 +416,7 @@ async function main() {
   // await depositWithMessageL2toL3(acc_l2);
   // await depositWithMessageL1toL3(acc_l1);
 
-  await getGameState(acc_l3);
+  // await getGameState(acc_l3);
   // await declareContract("gameContract", "gridy", Layer.L2);
 
   // await deployGameContract(acc_l2);

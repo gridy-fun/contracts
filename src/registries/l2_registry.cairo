@@ -14,6 +14,9 @@ mod l2_registry {
 
     // Upgradeable
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
+    
+    #[abi(embed_v0)]
+    impl OwnableMixinImpl = OwnableComponent::OwnableImpl<ContractState>;
 
     #[storage]
     struct Storage {

@@ -7,7 +7,7 @@
     "L1TokenBridge": "0xF6217de888fD6E6b2CbFBB2370973BE4c36a152D",
     "L3Registry": "0x23b0052e5e47b8d94ef37350a02dba867cef6b2ee2bee6eea363103df04dc18",
     "L2Registry": "0xcd7877a744fa49a6651585e451aa833d07100e8118a8fc15f4611a59bebcf7",
-    "GameContract_gridy": "0x61dabf5527d64169587abaf0aaf489dd49e542defed2ee962e6c96fb6b64618",
+    "GameContract_gridy": "0x750b93b692d94b3aa1b48ecec13541c50386d047a41193a721e48ba2a132515",
     "MyL1GameToken": "0x3e246b9c32ec304a4e82b624b5fc1882e7b8af2e",
     "MyL2GameToken": "0x36a44c6cfb107de7ec925d22cb549b7a881439b70d1fc30209728c5340d46f8",
     "MyL3GameToken": "0x5127cd69701df1736ccd883e9216b54e4ade825f28c8943d2fc9244ddf4175",
