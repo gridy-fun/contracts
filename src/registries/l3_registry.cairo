@@ -38,9 +38,11 @@ mod l3_registry {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, gridy_address: ContractAddress) {
+    fn constructor(
+        ref self: ContractState, gridy_address: ContractAddress, onwer: ContractAddress,
+    ) {
         self.gridy_address.write(gridy_address);
-        self.ownable.initializer(get_caller_address());
+        self.ownable.initializer(onwer);
     }
 
 

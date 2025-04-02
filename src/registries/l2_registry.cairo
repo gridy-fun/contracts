@@ -14,7 +14,7 @@ mod l2_registry {
 
     // Upgradeable
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
-    
+
     #[abi(embed_v0)]
     impl OwnableMixinImpl = OwnableComponent::OwnableImpl<ContractState>;
 
@@ -38,10 +38,15 @@ mod l2_registry {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, bridge: ContractAddress, l3Registry: ContractAddress) {
+    fn constructor(
+        ref self: ContractState,
+        bridge: ContractAddress,
+        l3Registry: ContractAddress,
+        owner: ContractAddress,
+    ) {
         self.bridge.write(bridge);
         self.l3Registry.write(l3Registry);
-        self.ownable.initializer(get_caller_address());
+        self.ownable.initializer(owner);
     }
 
     #[external(v0)]
