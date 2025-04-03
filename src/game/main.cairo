@@ -34,7 +34,7 @@ pub mod GameContract {
         ClassHash, ContractAddress, SyscallResultTrait, get_caller_address, get_contract_address,
     };
 
-    use super::{ ITokenBridgeDispatcher, ITokenBridgeDispatcherTrait };
+    use super::{ITokenBridgeDispatcher, ITokenBridgeDispatcherTrait};
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: UpgradeableComponent, storage: upgradeable, event: UpgradeableEvent);
@@ -207,13 +207,19 @@ pub mod GameContract {
             self.appchain_bridge.write(bridge);
         }
 
-        fn withdraw_game_currency(ref self: ContractState, amount: u128, recipient: ContractAddress) {
+        fn withdraw_game_currency(
+            ref self: ContractState, amount: u128, recipient: ContractAddress,
+        ) {
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
             assert(!self.game_currency.read().contract_address.is_zero(), 'Game currency not set');
             assert(!self.appchain_bridge.read().is_zero(), 'Appchain bridge not set');
-            let token_bridge = ITokenBridgeDispatcher { contract_address: self.appchain_bridge.read() };
-            token_bridge.initiate_withdraw(recipient, amount.into());
+            let token_bridge = ITokenBridgeDispatcher {
+                contract_address: self.appchain_bridge.read(),
+            };
+            let l2_token = self.game_currency.read().contract_address;
+            let l1_token = token_bridge.get_l1_token(l2_token);
+            token_bridge.initiate_token_withdraw(l1_token, recipient, amount.into());
         }
 
         fn get_appchain_bridge(self: @ContractState) -> ContractAddress {
