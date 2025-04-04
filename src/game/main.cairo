@@ -58,6 +58,7 @@ pub mod GameContract {
         block_points_map: Map<felt252, u128>,
         // bomb value -> flag value to identify a bomb
         bomb_value: u128,
+        diamond_points: u128,
         // points for mining
         mining_points: u128,
         // address of executor contract
@@ -74,6 +75,11 @@ pub mod GameContract {
         grid_height: u128,
         // starting amount to play the game
         boot_amount: felt252,
+        // magic diamonds
+        magic_500: bool,
+        magic_300: bool,
+        magic_200: bool,
+        // l3 bridge
         appchain_bridge: ContractAddress,
         // Total points awarded yet
         total_points: felt252,
@@ -159,6 +165,7 @@ pub mod GameContract {
         executor: ContractAddress,
         bot_contract_class_hash: ClassHash,
         bomb_value: u128,
+        diamond_points: u128,
         mining_points: u128,
         grid_width: u128,
         grid_height: u128,
@@ -169,6 +176,7 @@ pub mod GameContract {
         // Set the initial owner of the contract
         self.ownable.initializer(executor);
         self.contract_enabled.write(false);
+        self.diamond_points.write(diamond_points);
         self.mining_points.write(mining_points);
         self.sequencer.write(sequencer);
         self.grid_width.write(grid_width);
@@ -364,11 +372,25 @@ pub mod GameContract {
             // check for diamond or bomb
             let block_points: u128 = self.block_points_map.entry(new_mine).read();
 
-            // check if location contains a diamond
-            if block_points != 0 && block_points != bomb_value {
+            // check if location contains a bomb
+            if block_points == bomb_value {
+                bot_contract.kill_bot();
+                self.mined_tiles.entry(new_mine).write(true);
+                self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
+            } // check if location contains a diamond
+            else {
+                let diamond_value = self.diamond_points.read();
+                if block_points == diamond_value * 5 {
+                    self.magic_500.write(true);
+                } else if block_points == diamond_value * 3 {
+                    self.magic_300.write(true);
+                } else if block_points == diamond_value * 2 {
+                    self.magic_200.write(true);
+                }
                 let player = self.bot_to_player.entry(bot).read();
                 // mine the tile
                 self.mined_tiles.entry(new_mine).write(true);
+
                 self
                     .player_to_points
                     .entry(bot)
@@ -382,13 +404,7 @@ pub mod GameContract {
                             },
                         ),
                     );
-            } // check if location contains a bomb
-            else if block_points == bomb_value {
-                bot_contract.kill_bot();
-                self.mined_tiles.entry(new_mine).write(true);
-                self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
             }
-
             self
                 .emit(
                     Event::TileMined(
@@ -430,6 +446,10 @@ pub mod GameContract {
 
         fn get_total_diamonds_mined(self: @ContractState) -> felt252 {
             self.total_diamonds_mined.read()
+        }
+
+        fn get_magic_diamond_status(self: @ContractState) -> (bool, bool, bool) {
+            (self.magic_500.read(), self.magic_300.read(), self.magic_200.read())
         }
     }
 

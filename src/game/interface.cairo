@@ -30,4 +30,6 @@ pub trait IGameContract<TContractState> {
     fn get_bot_deployment_salt(self: @TContractState) -> felt252;
     fn get_total_diamonds_mined(self: @TContractState) -> felt252;
     fn get_appchain_bridge(self: @TContractState) -> ContractAddress;
+
+    fn get_magic_diamond_status(self: @TContractState) -> (bool, bool, bool);
 }
