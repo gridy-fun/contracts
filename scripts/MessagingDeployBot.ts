@@ -412,7 +412,7 @@ async function main() {
   // await initiateTokenWithdrawal(acc_l3, 10n * 10n ** 15n);
 
   // await depositL2toL3(acc_l2);
-  // await declareAndUpgradeGameContract(acc_l3);
+  await declareAndUpgradeGameContract(acc_l3);
   // await depositWithMessageL2toL3(acc_l2);
   // await depositWithMessageL1toL3(acc_l1);
 
