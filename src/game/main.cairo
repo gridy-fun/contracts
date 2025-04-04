@@ -21,7 +21,7 @@ pub mod GameContract{
     #[abi(embed_v0)]
     impl OwnableMixinImpl = OwnableComponent::OwnableMixinImpl<ContractState>;
     impl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;
-    
+
     // Upgradeable
     impl UpgradeableInternalImpl = UpgradeableComponent::InternalImpl<ContractState>;
 
@@ -66,7 +66,7 @@ pub mod GameContract{
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {        
+    enum Event {
         #[flat]
         OwnableEvent: OwnableComponent::Event,
         #[flat]
@@ -126,13 +126,13 @@ pub mod GameContract{
 
     #[constructor]
     fn constructor(
-        ref self: ContractState, 
-        executor: ContractAddress, 
+        ref self: ContractState,
+        executor: ContractAddress,
         bot_contract_class_hash: ClassHash,
         bomb_value: u128,
-        mining_points: u128, 
-        grid_width: u128, 
-        grid_height: u128, 
+        mining_points: u128,
+        grid_width: u128,
+        grid_height: u128,
         total_diamonds_and_bombs: u128,
         sequencer: ContractAddress
     ) {
@@ -196,7 +196,7 @@ pub mod GameContract{
 
         fn deploy_bot(ref self: ContractState, player: ContractAddress, location: felt252) {
             assert(self.is_contract_enabled(), 'Contract is disabled');
-            
+
             // This function can only be called by the owner
             self.ownable.assert_only_owner();
 
@@ -219,15 +219,17 @@ pub mod GameContract{
         }
 
         fn mine(ref self: ContractState, bot: ContractAddress, seed: u128) {
-            let caller = get_caller_address();
-            
+        
+            // Disabled owner checks
+            // let caller = get_caller_address();
+
             // This function can only be called by the admins
-            assert(self.sequencer.read() == caller || self.ownable.owner() == caller, 'Only admins can mine');
+            // assert(self.sequencer.read() == caller || self.ownable.owner() == caller, 'Only admins can mine');
 
             // check if contract is disabled
             assert(self.is_contract_enabled(), 'Contract is disabled');
 
-            // get bot contract 
+            // get bot contract
             let bot_contract = IBotContractDispatcher { contract_address: bot };
 
             // generate random point from bot
@@ -251,17 +253,18 @@ pub mod GameContract{
 
             // check if location contains a diamond
             if block_points != 0 && block_points != bomb_value {
+                // mine the tile
+                self.mined_tiles.entry(new_mine).write(true);
                 self.emit(Event::DiamondFound(DiamondFound { bot_address : bot, points: block_points, location: new_mine }));
             }
 
             // check if location contains a bomb
             else if block_points == bomb_value {
                 bot_contract.kill_bot();
+                 // mine the tile
+                self.mined_tiles.entry(new_mine).write(true);
                 self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
             }
-
-            // mine the tile
-            self.mined_tiles.entry(new_mine).write(true);
 
             self.emit(Event::TileMined(TileMined { bot_address: bot, points: self.mining_points.read(), location: new_mine }));
         }
