@@ -334,14 +334,6 @@ pub mod GameContract {
         }
 
         fn mine(ref self: ContractState, bot: ContractAddress, seed: u128) {
-            let caller = get_caller_address();
-
-            // This function can only be called by the admins
-            assert(
-                self.sequencer.read() == caller || self.ownable.owner() == caller,
-                'Only admins can mine',
-            );
-
             // check if contract is disabled
             assert(self.is_contract_enabled(), 'Contract is disabled');
 
@@ -378,7 +370,7 @@ pub mod GameContract {
                 self.mined_tiles.entry(new_mine).write(true);
                 self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
             } // check if location contains a diamond
-            else {
+            else if block_points != 0 {
                 let diamond_value = self.diamond_points.read();
                 if block_points == diamond_value * 5 {
                     self.magic_500.write(true);
