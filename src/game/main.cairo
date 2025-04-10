@@ -372,11 +372,11 @@ pub mod GameContract {
             } // check if location contains a diamond
             else if block_points != 0 {
                 let diamond_value = self.diamond_points.read();
-                if block_points == diamond_value * 5 {
+                if block_points == diamond_value * 500 {
                     self.magic_500.write(true);
-                } else if block_points == diamond_value * 3 {
+                } else if block_points == diamond_value * 300 {
                     self.magic_300.write(true);
-                } else if block_points == diamond_value * 2 {
+                } else if block_points == diamond_value * 200 {
                     self.magic_200.write(true);
                 }
                 let player = self.bot_to_player.entry(bot).read();
