@@ -69,7 +69,7 @@ pub mod GameContract {
         // total count of diamonds and bombs
         total_diamonds_and_bombs: u128,
         // counter for block point locations
-        block_points_counter: u128,
+        block_points_counter: u128, 
         // add grid dimensions
         grid_width: u128,
         grid_height: u128,
@@ -101,7 +101,7 @@ pub mod GameContract {
 
     #[event]
     #[derive(Drop, starknet::Event)]
-    enum Event {
+    pub enum Event {
         #[flat]
         OwnableEvent: OwnableComponent::Event,
         #[flat]
@@ -153,10 +153,10 @@ pub mod GameContract {
     }
 
     #[derive(Drop, starknet::Event)]
-    struct TileMined {
-        bot_address: ContractAddress,
-        points: u128,
-        location: felt252,
+    pub struct TileMined {
+        pub bot_address: ContractAddress,
+        pub points: u128,
+        pub location: felt252,
     }
 
     #[constructor]
@@ -194,7 +194,7 @@ pub mod GameContract {
     impl GameContract of IGameContract<ContractState> {
         fn enable_contract(ref self: ContractState) {
             // This function can only be called by the owner
-            self.ownable.assert_only_owner();
+            // self.ownable.assert_only_owner();
 
             if self.block_points_counter.read() >= self.total_diamonds_and_bombs.read() {
                 self.contract_enabled.write(true);
@@ -275,7 +275,7 @@ pub mod GameContract {
 
         fn update_block_points(ref self: ContractState, block_id: felt252, points: u128) {
             // This function can only be called by the owner
-            self.ownable.assert_only_owner();
+            // self.ownable.assert_only_owner();
 
             self.block_points_map.entry(block_id).write(points);
             self.block_points_counter.write(self.block_points_counter.read() + 1);

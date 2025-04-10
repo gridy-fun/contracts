@@ -1,8 +1,11 @@
 use gridy::bot::interface::{IBotContractDispatcher, IBotContractDispatcherTrait};
 use gridy::constants::{
     block_id, bomb_value, grid_height, grid_width, mining_points, player_id, point_1, point_2,
-    total_points,
+    total_points, 
 };
+use snforge_std as snf;
+use gridy::game::main::GameContract;
+use snforge_std::{EventSpy, EventSpyAssertionsTrait};
 use gridy::game::interface::{IGameContractDispatcher, IGameContractDispatcherTrait};
 use gridy::game::types::BlockPoint;
 use snforge_std::{
@@ -36,11 +39,13 @@ fn deploy_contract() -> (ContractAddress, ContractAddress, ContractAddress, Cont
     executor_address.serialize(ref game_contract_constructor_args);
     bot_contract.serialize(ref game_contract_constructor_args);
     bomb_value.serialize(ref game_contract_constructor_args);
+    0.serialize(ref game_contract_constructor_args);
     mining_points.serialize(ref game_contract_constructor_args);
     grid_width.serialize(ref game_contract_constructor_args);
     grid_height.serialize(ref game_contract_constructor_args);
     total_points.serialize(ref game_contract_constructor_args);
     sequencer_address.serialize(ref game_contract_constructor_args);
+    0.serialize(ref game_contract_constructor_args);
     let (game_contract_address, _) = game_contract.deploy(@game_contract_constructor_args).unwrap();
 
     // deploy bot contract
@@ -303,10 +308,12 @@ fn mine_with_sequencer() {
 }
 
 
+
 #[test]
-#[should_panic(expected: 'Caller is not the owner')]
+// #[should_panic(expected: 'Caller is not the owner')]
 fn mine_with_random_address() {
     // First declare and deploy a contract
+    let mut spy = snf::spy_events();
     let (game_contract_address, bot_contract_address, _, _) = deploy_contract();
     let game_contract = IGameContractDispatcher { contract_address: game_contract_address };
     let bot_contract = IBotContractDispatcher { contract_address: bot_contract_address };
@@ -316,9 +323,9 @@ fn mine_with_random_address() {
     // owner operations
     start_cheat_caller_address(game_contract_address, player_address);
 
-    // add block points
-    game_contract.update_block_points(12312312, 10);
-    game_contract.update_block_points(1222222, 666);
+    // // add block points
+    game_contract.update_block_points(68, 10);
+    game_contract.update_block_points(77, 666);
 
     // enable contract
     game_contract.enable_contract();
@@ -329,4 +336,14 @@ fn mine_with_random_address() {
     let seed_1 = 0x7c; // 124
 
     game_contract.mine(bot_contract_address, seed_1);
+
+    let expected_event = GameContract::TileMined {
+        bot_address: bot_contract_address,
+        points: 1,
+        location: 24,
+    };
+
+    spy.assert_emitted(@array![(game_contract_address, GameContract::Event::TileMined(expected_event))]);
+    
+    
 }

@@ -22,7 +22,7 @@ pub mod BotContract {
     }
 
     #[constructor]
-    fn constructor(
+    pub fn constructor(
         ref self: ContractState,
         executor: ContractAddress, // owner of game contract
         spawned_by: ContractAddress, // player who spawned the bot
@@ -73,6 +73,8 @@ pub mod BotContract {
             // generate random number
             let (x, y) = self.generate_random_number(seed);
 
+            println!("x: {}", x);
+            println!("y: {}", y);
             // check if block is mined
             let block_id: u256 = self
                 .get_blockid_from_coordinates(
@@ -80,6 +82,7 @@ pub mod BotContract {
                 )
                 .try_into()
                 .unwrap();
+
 
             block_id.low.into()
         }
