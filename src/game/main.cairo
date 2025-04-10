@@ -64,6 +64,8 @@ pub mod GameContract {
         // address of executor contract
         sequencer: ContractAddress,
         total_diamonds_mined: felt252,
+        total_bombs_mined: felt252,
+
         // mined tiles map
         mined_tiles: Map<felt252, bool>,
         // total count of diamonds and bombs
@@ -368,6 +370,7 @@ pub mod GameContract {
             if block_points == bomb_value {
                 bot_contract.kill_bot();
                 self.mined_tiles.entry(new_mine).write(true);
+                self.total_bombs_mined.write(self.total_bombs_mined.read() + 1);
                 self.emit(Event::BombFound(BombFound { bot_address: bot, location: new_mine }));
             } // check if location contains a diamond
             else if block_points != 0 {
@@ -438,6 +441,13 @@ pub mod GameContract {
 
         fn get_total_diamonds_mined(self: @ContractState) -> felt252 {
             self.total_diamonds_mined.read()
+        }
+
+          fn get_total_bombs_mined(self: @ContractState) -> felt252 {
+            self.total_bombs_mined.read()
+        }
+        fn get_block_points(self: @ContractState, block_id: felt252) -> u128 {
+            self.block_points_map.entry(block_id).read()
         }
 
         fn get_magic_diamond_status(self: @ContractState) -> (bool, bool, bool) {
