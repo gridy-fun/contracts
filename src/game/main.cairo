@@ -443,9 +443,10 @@ pub mod GameContract {
             self.total_diamonds_mined.read()
         }
 
-          fn get_total_bombs_mined(self: @ContractState) -> felt252 {
+        fn get_total_bombs_mined(self: @ContractState) -> felt252 {
             self.total_bombs_mined.read()
         }
+
         fn get_block_points(self: @ContractState, block_id: felt252) -> u128 {
             self.block_points_map.entry(block_id).read()
         }

@@ -32,4 +32,6 @@ pub trait IGameContract<TContractState> {
     fn get_appchain_bridge(self: @TContractState) -> ContractAddress;
 
     fn get_magic_diamond_status(self: @TContractState) -> (bool, bool, bool);
+    fn get_block_points(self: @TContractState, block_id: felt252) -> u128;
+    fn get_total_bombs_mined(self: @TContractState) -> felt252;
 }

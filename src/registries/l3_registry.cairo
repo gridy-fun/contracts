@@ -6,7 +6,7 @@ mod l3_registry {
     use OwnableComponent::InternalTrait;
     use openzeppelin::upgrades::interface::IUpgradeable;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
-    use starknet::{ClassHash, get_caller_address, ContractAddress, syscalls};
+    use starknet::{ClassHash, ContractAddress, syscalls};
 
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);

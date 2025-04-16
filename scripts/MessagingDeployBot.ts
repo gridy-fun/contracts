@@ -152,7 +152,7 @@ async function depositWithMessageL1toL3(acc_l1: WalletClient, token: string = "M
       address: l1GameToken,
       abi: tokenAbi,
       functionName: 'approve',
-      args: [tokenBridge, 10n ** 15n],
+      args: [tokenBridge, 10n ** 22n],
       chain: sepolia,
       account: acc_l1.account as EthAccount
     });
@@ -184,14 +184,14 @@ async function depositWithMessageL1toL3(acc_l1: WalletClient, token: string = "M
       functionName: 'depositWithMessage',
       args: [
         l1GameToken,  // l1 token
-        10n ** 15n,   // amount
+        10n ** 22n,   // amount
         l2Registry,   // l2Recipient
         [
           BigInt(player),
           185n
         ]
       ],
-      value: parseEther('0.001'),
+      value: parseEther('0.000001'),
       account: acc_l1.account as EthAccount,
       chain: sepolia,
     });
@@ -316,13 +316,12 @@ async function depositL2toL3(acc_l2: Account) {
 
     const call = token.populate('approve', {
       spender: tokenBridge,
-      amount: 10n * 10n ** 18n
+      amount: 10n * 10n ** 19n
     });
     let result = await acc_l2.execute([call]);
+    await acc_l2.waitForTransaction(result.transaction_hash);
     console.log("Approval success !!", result);
   }
-  await sleep(4000);
-
 
 
   // Deposit
@@ -332,13 +331,13 @@ async function depositL2toL3(acc_l2: Account) {
 
     const call = tokenBridgeContract.populate('deposit', {
       token: tokenAddress,
-      amount: 10n * 10n ** 18n,
-      appchain_recipient: process.env.ACCOUNT_L3_ADDRESS as string,
+      amount: 10n * 10n ** 19n,
+      appchain_recipient: "0x64f1161aa2e77141f04824ce1b2b2dea1a24aac19678d065a043f3e50b31928",
       message: 0
     });
     let result = await acc_l2.execute([call]);
     console.log("Deposit success !!", result);
-    await sleep(10000);
+    await acc_l2.waitForTransaction(result.transaction_hash);
   }
 }
 
@@ -411,9 +410,9 @@ async function main() {
   // await depositL1toL2(acc_l1);
   // await initiateTokenWithdrawal(acc_l3, 10n * 10n ** 15n);
 
-  // await depositL2toL3(acc_l2);
+  await depositL2toL3(acc_l2);
   // await declareAndUpgradeGameContract(acc_l3);
-  await depositWithMessageL2toL3(acc_l2);
+  // await depositWithMessageL2toL3(acc_l2);
   // await depositWithMessageL1toL3(acc_l1);
 
   // await getGameState(acc_l3);

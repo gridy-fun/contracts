@@ -73,8 +73,6 @@ pub mod BotContract {
             // generate random number
             let (x, y) = self.generate_random_number(seed);
 
-            println!("x: {}", x);
-            println!("y: {}", y);
             // check if block is mined
             let block_id: u256 = self
                 .get_blockid_from_coordinates(
