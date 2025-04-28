@@ -133,20 +133,22 @@ export async function declareContract(contract_name: string, package_name: strin
     } else {
       throw new Error('Invalid layer');
     }
-    await provider.waitForTransaction(tx.transaction_hash, {
-      successStates: [TransactionFinalityStatus.ACCEPTED_ON_L2]
-    })
-
-    console.log(`Declaring: ${contract_name}_${package_name}, tx: `, tx.transaction_hash);
-    if (!contracts.class_hashes) {
-      contracts['class_hashes'] = {};
+    if (tx.transaction_hash !== '') {
+      await provider.waitForTransaction(tx.transaction_hash, {
+        successStates: [TransactionFinalityStatus.ACCEPTED_ON_L2]
+      })
+      console.log(`Declaring: ${contract_name}_${package_name}, tx: `, tx.transaction_hash);
+      if (!contracts.class_hashes) {
+        contracts['class_hashes'] = {};
+      }
+      // Todo attach cairo and scarb version. and commit ID
+      contracts.class_hashes[`${contract_name}_${package_name}`] = tx.class_hash;
+      saveContracts(contracts);
+      console.log(`Contract declared: ${contract_name}_${package_name}`);
+      console.log(`Class hash: ${tx.class_hash}`)
+    } else {
+      console.log('Contract already declared');
     }
-    // Todo attach cairo and scarb version. and commit ID
-    contracts.class_hashes[`${contract_name}_${package_name}`] = tx.class_hash;
-    saveContracts(contracts);
-    console.log(`Contract declared: ${contract_name}_${package_name}`);
-    console.log(`Class hash: ${tx.class_hash}`)
-
     return tx;
   } catch (e) {
     console.log(e);
@@ -177,10 +179,8 @@ export async function deployContract(contract_name: string, classHash: string, c
   }
   console.log('Deploy tx: ', tx.transaction_hash);
 
-  await provider.waitForTransaction(tx.transaction_hash, {
-    // successStates: [TransactionFinalityStatus.ACCEPTED_ON_L2],
-    retryInterval: 100,
-  })
+  let receipt = await provider.waitForTransaction(tx.transaction_hash)
+  console.log('Receipt: ', receipt)
 
   const contracts = getContracts();
   if (!contracts.contracts) {

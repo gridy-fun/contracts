@@ -1,7 +1,7 @@
 use gridy::bot::interface::{IBotContractDispatcher, IBotContractDispatcherTrait};
 use gridy::constants::{
     block_id, bomb_value, grid_height, grid_width, mining_points, player_id, point_1, point_2,
-    total_points, 
+    total_points,
 };
 use snforge_std as snf;
 use gridy::game::main::GameContract;
@@ -308,7 +308,6 @@ fn mine_with_sequencer() {
 }
 
 
-
 #[test]
 // #[should_panic(expected: 'Caller is not the owner')]
 fn mine_with_random_address() {
@@ -338,12 +337,11 @@ fn mine_with_random_address() {
     game_contract.mine(bot_contract_address, seed_1);
 
     let expected_event = GameContract::TileMined {
-        bot_address: bot_contract_address,
-        points: 1,
-        location: 24,
+        bot_address: bot_contract_address, points: 1, location: 24,
     };
 
-    spy.assert_emitted(@array![(game_contract_address, GameContract::Event::TileMined(expected_event))]);
-    
-    
+    spy
+        .assert_emitted(
+            @array![(game_contract_address, GameContract::Event::TileMined(expected_event))],
+        );
 }

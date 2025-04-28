@@ -20,5 +20,10 @@ pub mod registries {
     pub mod l3_registry;
 }
 
+pub mod claims {
+    pub mod main;
+    pub mod interface;
+}
+
 pub mod constants;
 

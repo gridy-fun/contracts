@@ -81,7 +81,6 @@ pub mod BotContract {
                 .try_into()
                 .unwrap();
 
-
             block_id.low.into()
         }
 

@@ -1,0 +1,478 @@
+[
+    {
+        "player": "0x541bfd168a64acb7fc3331bec8226e672c786ed76f4585229941a95b9d4a60b",
+        "score": 475.73
+    },
+    {
+        "player": "0x18113089b133684e59e07d4a1e4a10b9b0d43053f926b582bc08c7643b3f7b9",
+        "score": 442.05
+    },
+    {
+        "player": "0x1cea635ebd5fcf9e6f95fe8ff43dd54856d30a45926586753b47899ed36d6cf",
+        "score": 269.44
+    },
+    {
+        "player": "0x462d4faa13fd500f8815fa4222db5e07b0105d52e2c8b7fcff3f19bc7068403",
+        "score": 202.08
+    },
+    {
+        "player": "0x4289e4fdd0861d381a74a96c070cb4f1cff2d0b4d90bb22a0c8d63bd39fa159",
+        "score": 189.45
+    },
+    {
+        "player": "0x1b147fd9c0bca7cbc6d328b582d5688d89e344eacba5cce267ca6e96425fc4",
+        "score": 164.19
+    },
+    {
+        "player": "0x74474bce5bb0ddfad861480c02611b199973e8b81995359f7a74dd1bf292b0d",
+        "score": 151.56
+    },
+    {
+        "player": "0x4620172a73caa49fdf729e258c0cd7b1f6e4262b8a7e724877af5f780806b40",
+        "score": 138.93
+    },
+    {
+        "player": "0x25672ec1714e625013a8a1162d58ebb340e868dca422ad4ecbd5ddce778acb4",
+        "score": 130.51
+    },
+    {
+        "player": "0x3858f95e136b3ee520b224dbb7f6b1dc954d993fc773b73785ca949733fbd3a",
+        "score": 122.09
+    },
+    {
+        "player": "0x7ff36c4707961dbd7b91b629bafd032148864c831f3ed688bc8fe778a379796",
+        "score": 117.88
+    },
+    {
+        "player": "0x1acb4d1a63f2b31011d40b93f65cbf39cdc649c14520cbd9744a4988440a7ea",
+        "score": 113.67
+    },
+    {
+        "player": "0x378b9c3cb6be32d087d1af8a91c1484226ac8b009f502e12b06ffd46d94f014",
+        "score": 113.67
+    },
+    {
+        "player": "0x64402aa8f910472994bc58e702d361b45791987d2cce1a1afc6e0f41e3c1889",
+        "score": 105.25
+    },
+    {
+        "player": "0x23adde1234cc9e83aef93af7a81ed63a906d7d020efbd739c7e71a30f96648",
+        "score": 96.83
+    },
+    {
+        "player": "0x68047beadc45aff253839d4dd7c2cd1c27d502738bad0af935d402bdf9244ed",
+        "score": 96.83
+    },
+    {
+        "player": "0x3bfda0c0311e633cce7d5fd6e00ca9ddbe05fc5a81488715a5cf90e891d80e3",
+        "score": 84.20
+    },
+    {
+        "player": "0x7e3fce846237782210d66852b2d9fb57ab6471cb8e20b4efcfe444aa582ff19",
+        "score": 54.73
+    },
+    {
+        "player": "0x48fcc322d37af0cf1e3e318a999910eb13a60d84acb1b3bd7a63dd86f76b5f9",
+        "score": 54.73
+    },
+    {
+        "player": "0x376e545a77dc50b5c41d406d4a561f5794f287f46829f20e0b28d779fad9dad",
+        "score": 50.52
+    },
+    {
+        "player": "0x1af89607efbcc9701f9f163d42c9a777064a2aad5d368e1f63418c6e03fd60e",
+        "score": 42.10
+    },
+    {
+        "player": "0x7ae518757d22112c53be104f9b8235a94554c777fe81d24cac1f9e2dfa7ad2d",
+        "score": 42.10
+    },
+    {
+        "player": "0x2775831d81d35d30cd842511331b482e4275cd1c8a34ae832adb0d282307afd",
+        "score": 37.89
+    },
+    {
+        "player": "0x1bd38e9754327ad366ebf4ece44ae04aef70f27800b9b0b70029742ca98478d",
+        "score": 33.68
+    },
+    {
+        "player": "0x2df9af8e1e23fdc93332d3784553f888df3cbab6597a43dd058a880e3271c28",
+        "score": 33.68
+    },
+    {
+        "player": "0x5cafc09dcdcb8dcd7dbf1af3837f641a2022c70bb51a773aaf7ea9b9cdd5d14",
+        "score": 29.47
+    },
+    {
+        "player": "0x377f461848c9cf86ca3d97324005ec183ec433740566283da6fa61e323e32c",
+        "score": 25.26
+    },
+    {
+        "player": "0xe243311a88747196f81aecca16f2769ab30c933a952aab0219a6ec2d0d925a",
+        "score": 25.26
+    },
+    {
+        "player": "0x7d26980311893f16b5f5b93cc2aa372ce34944e9efa2c43d47b3d8a4287b386",
+        "score": 25.26
+    },
+    {
+        "player": "0x577b5a148a45f7ed608f8755d0ef01bc0e1b9f3ce7d33a521fc401fba13acc6",
+        "score": 25.26
+    },
+    {
+        "player": "0xa3e1af29e30adee1da503c0ed4e936df4ed68290",
+        "score": 21.05
+    },
+    {
+        "player": "0x1f3972ed5c722e9136b511a1ebf362bc98da811d41de2e0accb320f8acd597a",
+        "score": 21.05
+    },
+    {
+        "player": "0x77adebaaf26deca4603337e9af8e7a9ef6f339a1798bd638f296fdf47281855",
+        "score": 21.05
+    },
+    {
+        "player": "0x7234bbe8561db8724b4fb0207df3c07b9b9a7540f06db833e6c0a1c3a2e20dc",
+        "score": 21.05
+    },
+    {
+        "player": "0x6496c659adab5aeeb34d7767f697ad41abfec046584313fe54fc304804fb195",
+        "score": 21.05
+    },
+    {
+        "player": "0x59c16b79d9def63899f557452805e11f89552e3cd726e2a0f0f6a4679441025",
+        "score": 21.05
+    },
+    {
+        "player": "0x47ab88662a0173b6014bfc41f7479cf8f973a7212fe5bc9abf8f40138c0c979",
+        "score": 21.05
+    },
+    {
+        "player": "0x76c574a9515f255f125e6a2d89465dbfd62fc26b0cbeaa69dfe8cb7239cc33a",
+        "score": 16.84
+    },
+    {
+        "player": "0x7602119aae2d65b606c2f2e36d361654ee7a4bbcdfe684c990ea925a84ff3da",
+        "score": 16.84
+    },
+    {
+        "player": "0x55e88814450cf477d410b80da20d85e4f9100ae197a64fa1889e8d6a0bac7c9",
+        "score": 16.84
+    },
+    {
+        "player": "0x32efcc3973302229d1fa66dfd225e3a76f95a6c9fed654d2614620a959e0d64",
+        "score": 16.84
+    },
+    {
+        "player": "0x11d187b29483071d23c55b69b275ebbb91da295b3411e604c9181361275b2b2",
+        "score": 12.63
+    },
+    {
+        "player": "0x7805b1c2f8e6c4c9bacd65f1067c4f25605c5ac0456ec40eec3b8f8365f0195",
+        "score": 12.63
+    },
+    {
+        "player": "0x76f37f7296806cb2469ec3b8164d7c7d07124a033f9b258c4fd26bc672c5870",
+        "score": 12.63
+    },
+    {
+        "player": "0x6fd089667ad15016fa88eb492049d1ad723f6d37c2b39e9669745318963830d",
+        "score": 12.63
+    },
+    {
+        "player": "0x6d76112e49e1de1e02c05322e770c943b8cd6a306a2882a35371a33b4265214",
+        "score": 12.63
+    },
+    {
+        "player": "0x6d0088aa76c1371178deb6be0febb963873d1855471c59248982b5d7f97baaf",
+        "score": 12.63
+    },
+    {
+        "player": "0xab3bebe95f968bd6334f2c0c93f6c87ae270da64881334839a473fd69e3c6a",
+        "score": 12.63
+    },
+    {
+        "player": "0x57b238474414180e90a722ca9689eea36c2f4a5fe2fdc02f0235ff3354555b1",
+        "score": 12.63
+    },
+    {
+        "player": "0x553a152286cd343417d02a4254ee4fd5f9684c0105a734f22c4f6154894363d",
+        "score": 12.63
+    },
+    {
+        "player": "0x79bdaf17a2a62f7cdc4f4f8368a07d8fd40447afb6ef675be7f174830ea13f",
+        "score": 12.63
+    },
+    {
+        "player": "0x49bf6cfecaea908cd1b83543fa923198b8a1e55062376b6e9efb3e8d4762b84",
+        "score": 12.63
+    },
+    {
+        "player": "0x3cedd4f7522a15961494bb61ebd0a56f88d7507fc3c681027315dc6dce13de8",
+        "score": 12.63
+    },
+    {
+        "player": "0x3959b18f03c1b510f2843f93b8205832baf76cc535492a6de941faf1e5016e5",
+        "score": 12.63
+    },
+    {
+        "player": "0x389effea3e1f23faa4a9b63df4a7916a009f4159e6f9c5c3ea2bbdf63e03a22",
+        "score": 12.63
+    },
+    {
+        "player": "0x3106f22af5fff5c263ac9ebcf136de850f83ec5ce2073f8c82c9ec73607f9c8",
+        "score": 12.63
+    },
+    {
+        "player": "0x42a1e72aa8d66179b7134017f0801e8c9462ae1ecbf00ee9b16672e035a1b2",
+        "score": 12.63
+    },
+    {
+        "player": "0x1fb62ac54f9fa99e1417f83bcb88485556427397f717ed4e7233bc99be31bff",
+        "score": 8.42
+    },
+    {
+        "player": "0x177db70b96ce39c9914d24e39cd41ddc2789805e127893e897785f23c7eaf08",
+        "score": 8.42
+    },
+    {
+        "player": "0x10273cd8a882f01ab0e72b2ac0d61954c3b6be0f6a117eaf374dcfa48b5ddb4",
+        "score": 8.42
+    },
+    {
+        "player": "0x7ff732a20de46c0575a8a063692ac6e22a69f8708c5d4717f1fc336f55a35cd",
+        "score": 8.42
+    },
+    {
+        "player": "0x7516eae16661fed2c088982b07769f1538d076da6a9133ce8810d981cf6ac99",
+        "score": 8.42
+    },
+    {
+        "player": "0x73492cb2933fa9cffbdc100951d0dcbacea8e2780f22a786b434092de90b859",
+        "score": 8.42
+    },
+    {
+        "player": "0x643948eef68d67cbd9a1853b6181b83f15d06953724fd5347e922d40245b93c",
+        "score": 8.42
+    },
+    {
+        "player": "0x5ba889a109d5c3443889fd4c2b87637872ab5105bdcc32dc2b84c02252971f9",
+        "score": 8.42
+    },
+    {
+        "player": "0x4b554aec1c625b864d109ecc6ffcc2696b39512e7056588624f806f79f826f5",
+        "score": 8.42
+    },
+    {
+        "player": "0xb88a30f94d8ee92be78ec33a483d88e3f9bec70b598d52aa8ef84b66bfb41",
+        "score": 8.42
+    },
+    {
+        "player": "0x34a4d909ffed3caf39bef9f6ca3677213f394f616b977f41ffb5b46ffe9f736",
+        "score": 8.42
+    },
+    {
+        "player": "0xd31e3dc855c92fb456cac5f1e2f9f4b59f4fe7e2",
+        "score": 8.42
+    },
+    {
+        "player": "0x2336d3485993209ecd013d5339ae1e9081b8950b095fa15f1508a518aa68bfa",
+        "score": 4.21
+    },
+    {
+        "player": "0x22155e25ab7ccf2dbe2f467b68327c39fa0b7946af08c9ef20d56a39a04220c",
+        "score": 4.21
+    },
+    {
+        "player": "0x21105dc37ae2eec838788359ee8769b45e9c30b8213789aaf8363b2d2898782",
+        "score": 4.21
+    },
+    {
+        "player": "0x20d214ce6e45610fcb648ec4363fc7563be4194f3bfe49cf905a906b53d392c",
+        "score": 4.21
+    },
+    {
+        "player": "0x20785c43cece74eee1023640d68d927536d4cfda7edad04140104e19f2d6b07",
+        "score": 4.21
+    },
+    {
+        "player": "0x1fcd09ae335199b4a037e1df083d1c41004075f6a06c6a84729cbd49d50f88a",
+        "score": 4.21
+    },
+    {
+        "player": "0x2a6812f78c82d97e422f6d4c2ebd3e8d2b0a1a8106d40186f1a371715818e6",
+        "score": 4.21
+    },
+    {
+        "player": "0x18609026d235698aa871eb1e1485c1cb5904f4a0c363ad5b7f83874aea4b6b1",
+        "score": 4.21
+    },
+    {
+        "player": "0x12ad23790596b4193c596d99083722a91dabca2711b0843d57f3d4f5030d5e5",
+        "score": 4.21
+    },
+    {
+        "player": "0xfa7fa78ec4fef26640be10cba2c330e4696f1e4a72f17e0092e4364e33ea5a",
+        "score": 4.21
+    },
+    {
+        "player": "0xec65dba7018f252a78a4486335e93a41a44d3c6887fed0f6f112cb54d46d24",
+        "score": 4.21
+    },
+    {
+        "player": "0xd9391b6f8ec56a6ab7457968524941be0f38882cabd6495167e36b5f90d036",
+        "score": 4.21
+    },
+    {
+        "player": "0x7cd6ef800ff3defb38136ea5ad5c3dd319ee045c825ea4dc9089d68c8b9509c",
+        "score": 4.21
+    },
+    {
+        "player": "0x73b92c51f1f782846fcf2705829dc279ff2be3bc47e1adc78f6094da105e771",
+        "score": 4.21
+    },
+    {
+        "player": "0x7360aee5743eba462e17e1886cca91be06ad5110fd3142d284332af3fc7248b",
+        "score": 4.21
+    },
+    {
+        "player": "0x7068ae5027964e13b94b127b86b2c81f3eafa9e561b592fe9e6f05fc903032a",
+        "score": 4.21
+    },
+    {
+        "player": "0x6f256f27f1b226366280b91928844c676fc49e1f43a73de3dfd6f760a116615",
+        "score": 4.21
+    },
+    {
+        "player": "0x6eb7a86840b013fc293c16c62dc02af217c3bce12f2f5348eb8cc5e9eed94a8",
+        "score": 4.21
+    },
+    {
+        "player": "0x6d910ac9c0e350289a1c6c670f9a2a59a9b1cac017315a93280badf96acbf78",
+        "score": 4.21
+    },
+    {
+        "player": "0xab4b8ba3b06806d2640cc6a1e5ed8ab290469c878985558350ebbdd39c85c8",
+        "score": 4.21
+    },
+    {
+        "player": "0x6a4bc059bf193b15bfc064179828c985622de5ad319eb849b12c63916cea730",
+        "score": 4.21
+    },
+    {
+        "player": "0x69a07011db89540271d06fbc694c8391a60b12a3c0b15c4f839d36cea4dafd0",
+        "score": 4.21
+    },
+    {
+        "player": "0x6990164002ebcb1727ec8e921beb8b9d90a60816cf4eaa4951e583881a689e4",
+        "score": 4.21
+    },
+    {
+        "player": "0x6742ea56da17884a254e46b07a68b4d7d643b4a5fe30a9249732787c73af3c0",
+        "score": 4.21
+    },
+    {
+        "player": "0x6713fb0a93cc7b37c0ed55fde7387307a38d85323922a0904cbf8dc0bcca838",
+        "score": 4.21
+    },
+    {
+        "player": "0x5e980d39c65b17f2505772afa12597f3a23b4473827480e7904025b8f024050",
+        "score": 4.21
+    },
+    {
+        "player": "0x5dd54daa9edcd6e537c4e32b7f72bbf83a04a5699b7eb2360dd39e3f39159a0",
+        "score": 4.21
+    },
+    {
+        "player": "0x588b3c4d3d971d12dd2af19901182a88ed7ac148df344cadb634d262e8777b3",
+        "score": 4.21
+    },
+    {
+        "player": "0x573f7be79ab48096efe84d7d78f63fe97416f8966b12c71d31b0dfaef4ed658",
+        "score": 4.21
+    },
+    {
+        "player": "0x8b74abeb38b4453a76b00be148f48831775ae2b6781642b02518ce09463708",
+        "score": 4.21
+    },
+    {
+        "player": "0x569d0e5c2b554359215c9bdeadf51eb117864a3053e85f2122417d59e2d0b09",
+        "score": 4.21
+    },
+    {
+        "player": "0x555391cd09d0cb818b26a7d771a8ce259240c965203edc5994ad7fc89c5cd12",
+        "score": 4.21
+    },
+    {
+        "player": "0x554c18d341221785e08c6066263a0319c45817ad6101c49dda8d39a7b61f4ae",
+        "score": 4.21
+    },
+    {
+        "player": "0x54c0a26096c04a662e2b80a70040c68b0eaf164d988e2fe5ec8497e9c5c5d2a",
+        "score": 4.21
+    },
+    {
+        "player": "0x50fa863dd9421b8fcc09672670f82497e2447468af9f08f8810ba09fe910a5f",
+        "score": 4.21
+    },
+    {
+        "player": "0x4d3125706a5471ab7378ccc999fed1041b72e849e0b9db89b7e1d9cb0f09597",
+        "score": 4.21
+    },
+    {
+        "player": "0x6af6d0adccb1fed4c25c47d95e44bc6d984f0f8e1c2c54675bf4c034cbbb65",
+        "score": 4.21
+    },
+    {
+        "player": "0x42a24c39c55072aa0c12bae5f29b008f957a773df2338c4187b2f316ddbbadc",
+        "score": 4.21
+    },
+    {
+        "player": "0x426d583fdbf010cebf43fbef53ba16fc9ca8e3c18f21e921dad022877a81140",
+        "score": 4.21
+    },
+    {
+        "player": "0x3e5d41d720035fe85f583484b1eafb27820e33392e7356e25fedd1a3b5ee3dd",
+        "score": 4.21
+    },
+    {
+        "player": "0x3e35f10ed657810eb18fc4a57601c2e60a16f27eeab3724bf5525c9db88cfb8",
+        "score": 4.21
+    },
+    {
+        "player": "0x379de2efcfcbabe0cf373bf5b7d951bb28ff794fa32aae69ddaa77a0d6ed1ad",
+        "score": 4.21
+    },
+    {
+        "player": "0x370263a314b48470bc614608b2536c289d41a3bd140749792205cfc320f1a13",
+        "score": 4.21
+    },
+    {
+        "player": "0x36dd8380c8555074a3b13c3ce816e51074a72a58e9837f9010c11bc225b124a",
+        "score": 4.21
+    },
+    {
+        "player": "0x34b2f7f315790b31b3dafc787f0ff6d1e8d9c01a3f930dd55543b7f02371580",
+        "score": 4.21
+    },
+    {
+        "player": "0x4d8b08fe69aced516e0c0a1d0699179e874ceff9bff5fb4cab03bcbecf6fb5",
+        "score": 4.21
+    },
+    {
+        "player": "0xe4db2106d1703f98df53d5f578e2e18b04a0fe09",
+        "score": 4.21
+    },
+    {
+        "player": "0x2ad2a6c0661c627e2e8b35e8d91b58da8e85b30ad8c53ea969debbf0471be35",
+        "score": 4.21
+    },
+    {
+        "player": "0x2a1447dfdcfeadf7ebafc6dbf6bd7a7bf25ac0d647fc6ec6f0cf3203e24d791",
+        "score": 4.21
+    },
+    {
+        "player": "0x248fb2918ebac60d44877e1517bc1ebc0d94e3de10a53a914ef411539fe788c",
+        "score": 4.21
+    }
+]

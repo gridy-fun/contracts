@@ -65,13 +65,12 @@ pub mod GameContract {
         sequencer: ContractAddress,
         total_diamonds_mined: felt252,
         total_bombs_mined: felt252,
-
         // mined tiles map
         mined_tiles: Map<felt252, bool>,
         // total count of diamonds and bombs
         total_diamonds_and_bombs: u128,
         // counter for block point locations
-        block_points_counter: u128, 
+        block_points_counter: u128,
         // add grid dimensions
         grid_width: u128,
         grid_height: u128,

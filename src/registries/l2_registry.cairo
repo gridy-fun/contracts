@@ -6,7 +6,7 @@ mod l2_registry {
     use openzeppelin::access::ownable::OwnableComponent;
     use OwnableComponent::InternalTrait;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
-    use starknet::{ClassHash, get_caller_address, ContractAddress, SyscallResultTrait, syscalls};
+    use starknet::{ClassHash, ContractAddress, SyscallResultTrait, syscalls};
 
 
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);

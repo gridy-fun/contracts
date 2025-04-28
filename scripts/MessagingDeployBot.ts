@@ -270,35 +270,27 @@ async function depositWithMessageL2toL3(acc_l2: Account) {
     const gridCls = await acc_l2.getClassAt(gridTokenAddress);
     const gridToken = new Contract(gridCls.abi, gridTokenAddress, acc_l2);
 
-    const call = gridToken.populate('approve', {
+    const approveCall = gridToken.populate('approve', {
       spender: tokenBridge,
       amount: 10n * 10n ** 18n
     });
-    let result = await acc_l2.execute([call]);
-    console.log("Approval success !!", result);
-  }
-  await sleep(4000);
-
-
-
-  // Deposit
-  {
+  
     const Bridgecls = await acc_l2.getClassAt(tokenBridge);
     const tokenBridgeContract = new Contract(Bridgecls.abi, tokenBridge, acc_l2);
     const l3Registry = getContracts().contracts["L3Registry"];
 
-    const call = tokenBridgeContract.populate('deposit_with_message', {
+    const depositWithMessageCall = tokenBridgeContract.populate('deposit_with_message', {
       token: gridTokenAddress,
-      amount: 10n * 10n ** 18n,
+      amount: 1n * 10n ** 5n,
       appchain_recipient: l3Registry,
       message: [
         process.env.ACCOUNT_L2_ADDRESS as string, // Player in game
         85n // Initial location to mine
       ]
     });
-    let result = await acc_l2.execute([call]);
+    let result = await acc_l2.execute([approveCall, depositWithMessageCall]);
+    await acc_l2.waitForTransaction(result.transaction_hash);
     console.log("Deposit success !!", result);
-    await sleep(10000);
   }
 }
 
@@ -410,9 +402,9 @@ async function main() {
   // await depositL1toL2(acc_l1);
   // await initiateTokenWithdrawal(acc_l3, 10n * 10n ** 15n);
 
-  await depositL2toL3(acc_l2);
+  // await depositL2toL3(acc_l2);
   // await declareAndUpgradeGameContract(acc_l3);
-  // await depositWithMessageL2toL3(acc_l2);
+  await depositWithMessageL2toL3(acc_l2);
   // await depositWithMessageL1toL3(acc_l1);
 
   // await getGameState(acc_l3);
