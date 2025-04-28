@@ -258,12 +258,9 @@ async function depositL1toL2(acc_l1: WalletClient) {
   }
 }
 
-
 async function depositWithMessageL2toL3(acc_l2: Account) {
   const gridTokenAddress = getContracts().contracts["MyL2GameToken"];
   const tokenBridge = getContracts().contracts["TokenBridge_starknet_bridge"];
-
-
 
   // Approval
   {
