@@ -18,13 +18,13 @@ export function calculateLeafHash(address: string, amount: string) {
 }
 
 export async function getMerkleRoot(): Promise<string> {
-  // const leaderboard = JSON.parse(fs.readFileSync("leaderboard.json", "utf8"));
-  // const values = formatValuesFromLeaderboard(leaderboard);
+  const leaderboard = JSON.parse(fs.readFileSync("leaderboard.json", "utf8"));
+  const values = formatValuesFromLeaderboard(leaderboard);
 
-  const values = [
-    ["0x1111111111111111111111111111111111111111", "5000000000000000000"],
-    ["0x2222222222222222222222222222222222222222", "2500000000000000000"]
-  ];
+  // const values = [
+  //   ["0x1111111111111111111111111111111111111111", "5000000000000000000"],
+  //   ["0x2222222222222222222222222222222222222222", "2500000000000000000"]
+  // ];
 
   const leaves = values.map((value) => calculateLeafHash(value[0], value[1]));
 

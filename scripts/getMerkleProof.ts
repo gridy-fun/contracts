@@ -1,7 +1,7 @@
 import { SimpleMerkleTree } from "@ericnordelo/strk-merkle-tree";
 import fs from "fs";
 import readline from "readline";
-import { calculateLeafHash } from "./getMerkleRoot";
+import { calculateLeafHash, formatValuesFromLeaderboard } from "./getMerkleRoot";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -11,10 +11,8 @@ const rl = readline.createInterface({
 
 export async function getMerkleProof(address: string): Promise<{ v: any[], p: string[] }> {
   const tree = SimpleMerkleTree.load(JSON.parse(fs.readFileSync("tree.json", "utf8")));
-  const values = [
-    ["0x1111111111111111111111111111111111111111", "5000000000000000000"],
-    ["0x2222222222222222222222222222222222222222", "2500000000000000000"]
-  ];
+  const leaderboard = JSON.parse(fs.readFileSync("values.json", "utf8"));
+  const values = formatValuesFromLeaderboard(leaderboard);
 
   for (const [i, v] of tree.entries()) {
     const [addr, amount] = values[i];
