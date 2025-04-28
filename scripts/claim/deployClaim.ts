@@ -1,4 +1,4 @@
-import { deployContract, Layer, getAccount, declareContract, getContracts } from "./utils";
+import { deployContract, Layer, getAccount, declareContract, getContracts } from "../utils";
 import { getMerkleRoot } from "./getMerkleRoot";
 
 export async function deployClaim() {

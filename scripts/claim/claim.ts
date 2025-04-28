@@ -1,5 +1,5 @@
 import { Contract } from "starknet";
-import { getAccount,  getContracts, Layer } from "./utils";
+import { getAccount,  getContracts, Layer } from "../utils";
 import { getMerkleProof } from "./getMerkleProof";
 import assert from "assert";
 

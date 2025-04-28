@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
-import { deployContract, getAccount, declareContract, getContracts, getProvider, Layer, getEthereumClient } from "./utils";
+import { deployContract, getAccount, declareContract, getContracts, getProvider, Layer, getEthereumClient } from "../utils";
 import {
   Account, Contract, num
 } from 'starknet';
