@@ -70,6 +70,13 @@ mod Claim {
             ref self: ContractState, proof: Span<felt252>, address: ContractAddress, amount: u128,
         ) {
             assert(self.verify(proof, address, amount), 'Verifier: invalid proof');
+
+            assert(self.has_claimed.read(address) == false, 'Already claimed');
+            
+            let token = self.token_address.read();
+            token.transfer(address, amount.into());
+
+            self.has_claimed.write(address, true);
         }
 
         fn get_token_address(self: @ContractState) -> ContractAddress {
