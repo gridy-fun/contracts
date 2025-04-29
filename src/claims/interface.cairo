@@ -6,6 +6,7 @@ pub trait IClaimContract<TState> {
     fn get_token_address(self: @TState) -> ContractAddress;
     fn verify(self: @TState, proof: Span<felt252>, address: ContractAddress, amount: u128) -> bool;
     fn leaf_hash(self: @TState, address: ContractAddress, amount: u128) -> felt252;
+    fn has_claimed(self: @TState, address: ContractAddress) -> bool;
 }
 
 #[starknet::interface]

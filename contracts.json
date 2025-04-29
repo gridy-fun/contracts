@@ -1,1 +1,27 @@
-{"contracts":{"ERC20_starknet_bridge":"0xc811e776b41e5bb5e80e992d64c4ac1eb52c5a16c32d1882b1341b9344186c","appchain_starknet_bridge":"0x60ee7746b6ae0aea09b0924482f1740c192d66b9952519b36eca21e99b3dcf1","TokenBridge_starknet_bridge":"0x7097daccd81703fda310085861e6d55f6c7625329b11aafacc3bb52916cac2a","TokenBridge_starkgate_contracts":"0x8ff0d8c01af0b9e5ab904f0299e6ae3a94b28c680b821ab02b978447d2da67","L1TokenBridge":"0xF6217de888fD6E6b2CbFBB2370973BE4c36a152D","L3Registry":"0x2a8ddd89e0a963fc691642ed524155fbfd7378b6b0d8186c8710ffbce456ec2","L2Registry":"0xcd7877a744fa49a6651585e451aa833d07100e8118a8fc15f4611a59bebcf7","GameContract_gridy":"0x64f1161aa2e77141f04824ce1b2b2dea1a24aac19678d065a043f3e50b31928","MyL1GameToken":"0x22D7850DB1d10877EBE6F7b73d2a9881a5be55fc","MyL2GameToken":"0x00db961f3b6a0860543360d6a249b9c1cc0e79bd62d450c9549debb1294f39e5","MyL3GameToken":"0x07d146de270a5cffc57d87e6965607bab57d431e3f01755dbf800376b68fdb3d","L1StrkToken":"0xCa14007Eff0dB1f8135f4C25B34De49AB0d42766","L2StrkToken":"0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d","Claim":"0x41464ae3b92d9fdda789b3bdee89aae983da1c50ad09bb9e1ad489b5aa80a7f"},"class_hashes":{"GameContract_gridy":"0x2bc8447bc8f7c835b95d917e67c5c0fca776e97b46b65a50492f9d57c7af06b","Claim_gridy":"0x441bca3313d2e3de595b4bfa4138e0e38d437e66d1d1eeea21e389ed635a702"}}
+{
+    "contracts": {
+        "USDC": "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8"
+    },
+    "sepolia": {
+        "contracts": {
+            "ERC20_starknet_bridge": "0xc811e776b41e5bb5e80e992d64c4ac1eb52c5a16c32d1882b1341b9344186c",
+            "appchain_starknet_bridge": "0x60ee7746b6ae0aea09b0924482f1740c192d66b9952519b36eca21e99b3dcf1",
+            "TokenBridge_starknet_bridge": "0x7097daccd81703fda310085861e6d55f6c7625329b11aafacc3bb52916cac2a",
+            "TokenBridge_starkgate_contracts": "0x8ff0d8c01af0b9e5ab904f0299e6ae3a94b28c680b821ab02b978447d2da67",
+            "L1TokenBridge": "0xF6217de888fD6E6b2CbFBB2370973BE4c36a152D",
+            "L3Registry": "0x2a8ddd89e0a963fc691642ed524155fbfd7378b6b0d8186c8710ffbce456ec2",
+            "L2Registry": "0xcd7877a744fa49a6651585e451aa833d07100e8118a8fc15f4611a59bebcf7",
+            "GameContract_gridy": "0x64f1161aa2e77141f04824ce1b2b2dea1a24aac19678d065a043f3e50b31928",
+            "MyL1GameToken": "0x22D7850DB1d10877EBE6F7b73d2a9881a5be55fc",
+            "MyL2GameToken": "0x00db961f3b6a0860543360d6a249b9c1cc0e79bd62d450c9549debb1294f39e5",
+            "MyL3GameToken": "0x07d146de270a5cffc57d87e6965607bab57d431e3f01755dbf800376b68fdb3d",
+            "L1StrkToken": "0xCa14007Eff0dB1f8135f4C25B34De49AB0d42766",
+            "L2StrkToken": "0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d",
+            "Claim": "0x41464ae3b92d9fdda789b3bdee89aae983da1c50ad09bb9e1ad489b5aa80a7f"
+        },
+        "class_hashes": {
+            "GameContract_gridy": "0x2bc8447bc8f7c835b95d917e67c5c0fca776e97b46b65a50492f9d57c7af06b",
+            "Claim_gridy": "0x441bca3313d2e3de595b4bfa4138e0e38d437e66d1d1eeea21e389ed635a702"
+        }
+    }
+}

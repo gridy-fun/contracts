@@ -75,7 +75,7 @@ export function getAccount<T extends Layer>(layer: T): Account {
   if (layer == Layer.L2) {
     const privateKey = process.env.ACCOUNT_L2_PRIVATE_KEY as string;
     const accountAddress: string = process.env.ACCOUNT_L2_ADDRESS as string;
-    return new Account(provider, accountAddress, privateKey, undefined, "0x3");
+    return new Account(provider, accountAddress, privateKey);
   } else if (layer == Layer.L3) {
     const privateKey = process.env.ACCOUNT_L3_PRIVATE_KEY as string;
     const accountAddress: string = process.env.ACCOUNT_L3_ADDRESS as string;
@@ -129,7 +129,7 @@ export async function declareContract(contract_name: string, package_name: strin
       });
     } else if (layer === Layer.L2) {
       console.log("Declaring on L2");
-      tx = await acc.declareIfNot(payload, { maxFee: 0 });
+      tx = await acc.declareIfNot(payload);
     } else {
       throw new Error('Invalid layer');
     }
@@ -180,6 +180,7 @@ export async function deployContract(contract_name: string, classHash: string, c
   console.log('Deploy tx: ', tx.transaction_hash);
 
   let receipt = await provider.waitForTransaction(tx.transaction_hash)
+  assert(receipt.isSuccess(), 'Transaction failed');
   console.log('Receipt: ', receipt)
 
   const contracts = getContracts();

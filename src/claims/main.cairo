@@ -99,6 +99,10 @@ mod Claim {
                 0, hash_state.update_with(address).update_with(amount).update_with(2).finalize(),
             )
         }
+
+        fn has_claimed(self: @ContractState, address: ContractAddress) -> bool {
+            self.has_claimed.read(address)
+        }
     }
 
     #[abi(embed_v0)]
