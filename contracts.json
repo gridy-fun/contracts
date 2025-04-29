@@ -1,6 +1,7 @@
 {
     "contracts": {
-        "USDC": "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8"
+        "USDC": "0x053c91253bc9682c04929ca02ed00b3e423f6710d2ee7e0d5ebb06f3ecf368a8",
+        "Claim": "0x7a802e26981338c3e7b0e83ad623815f0789ad00ceeecb30cfa17ac095c676f"
     },
     "sepolia": {
         "contracts": {
@@ -23,5 +24,8 @@
             "GameContract_gridy": "0x2bc8447bc8f7c835b95d917e67c5c0fca776e97b46b65a50492f9d57c7af06b",
             "Claim_gridy": "0x441bca3313d2e3de595b4bfa4138e0e38d437e66d1d1eeea21e389ed635a702"
         }
+    },
+    "class_hashes": {
+        "Claim_gridy": "0x23b923935316f960088d929785a2abc5ee0228020d2396929f2501508f28e58"
     }
 }
