@@ -5,7 +5,7 @@ import { Account, RawArgs, RpcProvider, TransactionFinalityStatus, extractContra
 import { readFileSync, existsSync, writeFileSync } from 'fs'
 import { http, createWalletClient, WalletClient } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts';
-import { sepolia } from 'viem/chains'
+import { mainnet, sepolia } from 'viem/chains'
 
 
 
@@ -61,7 +61,7 @@ export function getEthereumClient(): WalletClient {
   const privateKey = process.env.ACCOUNT_L1_PRIVATE_KEY as string;
   const account = privateKeyToAccount(`0x${privateKey}`);
   return createWalletClient({
-    chain: sepolia,
+    chain: mainnet,
     transport: http(),
     account
   })
